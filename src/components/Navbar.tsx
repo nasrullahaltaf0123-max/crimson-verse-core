@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CrimsonButton } from "./CrimsonButton";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserPlus } from "lucide-react";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const isJoinPage = location.pathname === "/join";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/30">
@@ -14,19 +16,21 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-6">
           <Link to="/search" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Search Donors
           </Link>
           <Link to="/urgent" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Urgent Requests
+            Urgent
           </Link>
-          <Link to="/join" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Join Us
-          </Link>
-          <CrimsonButton size="sm" variant="primary">
-            Request Blood
-          </CrimsonButton>
+          {!isJoinPage && (
+            <Link to="/join">
+              <CrimsonButton size="sm" variant="primary">
+                <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+                Join as Donor
+              </CrimsonButton>
+            </Link>
+          )}
         </nav>
 
         {/* Mobile toggle */}
@@ -49,12 +53,12 @@ const Navbar = () => {
             <Link to="/urgent" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
               Urgent Requests
             </Link>
-            <Link to="/join" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
-              Join Us
+            <Link to="/join" onClick={() => setOpen(false)}>
+              <CrimsonButton variant="primary" className="w-full mt-2">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Join as Donor
+              </CrimsonButton>
             </Link>
-            <CrimsonButton variant="primary" className="mt-2">
-              Request Blood
-            </CrimsonButton>
           </nav>
         </div>
       )}
