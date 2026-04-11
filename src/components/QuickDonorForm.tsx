@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, Shield, Users, Check, Upload } from "lucide-react";
+import { useSiteStats } from "@/hooks/useSiteStats";
 
 export interface QuickDonorData {
   fullName: string;
@@ -55,6 +57,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const { stats } = useSiteStats();
 
   // Autosave
   useEffect(() => {
@@ -81,14 +84,38 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
-    setTimeout(() => {
+
+    const { error } = await supabase.from("donors").insert({
+      full_name: form.fullName.trim(),
+      phone: form.phone.trim(),
+      blood_group: form.bloodGroup,
+      batch_session: form.batch,
+      gender: form.gender,
+      available_now: form.currentlyAvailable,
+      student_roll: form.studentId.trim() || null,
+      email: form.email.trim() || null,
+      facebook_link: form.facebookLink.trim() || null,
+      year_semester: form.yearSemester || null,
+      last_donation_date: form.lastDonationDate.trim() || null,
+      donor_status: form.donorStatus || null,
+      weight: form.weight || null,
+      health_notes: form.healthIssues.trim() || null,
+      preferred_time: form.preferredTime || null,
+      current_area: form.currentArea.trim() || null,
+      hall_hostel: form.hallHostel.trim() || null,
+      city: form.city.trim() || null,
+      emergency_zone: form.emergencyZone || null,
+      consent: form.consentChecked,
+    });
+
+    setSubmitting(false);
+    if (!error) {
       localStorage.removeItem(DRAFT_KEY);
-      setSubmitting(false);
       onSuccess(form);
-    }, 800);
+    }
   };
 
   const InputField = ({ label, field, placeholder, type = "text", required = false }: {
@@ -138,7 +165,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
       <div className="flex items-center gap-3 bg-accent/40 rounded-xl p-4 mb-8">
         <Users className="h-5 w-5 text-primary flex-shrink-0" />
         <p className="font-body text-sm text-foreground">
-          <span className="font-bold">127 students</span> from English Dept already joined
+          <span className="font-bold">{stats.total_donors} students</span> from English Dept already joined
         </p>
       </div>
 

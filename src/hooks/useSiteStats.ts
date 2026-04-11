@@ -1,0 +1,61 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+export interface SiteStats {
+  total_donors: number;
+  active_requests: number;
+  rare_blood_count: number;
+  successful_matches: number;
+}
+
+const defaultStats: SiteStats = {
+  total_donors: 0,
+  active_requests: 0,
+  rare_blood_count: 0,
+  successful_matches: 0,
+};
+
+export function useSiteStats() {
+  const [stats, setStats] = useState<SiteStats>(defaultStats);
+  const [loading, setLoading] = useState(true);
+
+  const fetchStats = async () => {
+    const { data } = await supabase
+      .from("site_stats")
+      .select("*")
+      .limit(1)
+      .single();
+
+    if (data) {
+      setStats({
+        total_donors: data.total_donors,
+        active_requests: data.active_requests,
+        rare_blood_count: data.rare_blood_count,
+        successful_matches: data.successful_matches,
+      });
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchStats();
+
+    // Listen for changes on donors and emergency_requests
+    const ch1 = supabase
+      .channel("stats-donors")
+      .on("postgres_changes", { event: "*", schema: "public", table: "donors" }, () => fetchStats())
+      .subscribe();
+
+    const ch2 = supabase
+      .channel("stats-requests")
+      .on("postgres_changes", { event: "*", schema: "public", table: "emergency_requests" }, () => fetchStats())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ch1);
+      supabase.removeChannel(ch2);
+    };
+  }, []);
+
+  return { stats, loading };
+}

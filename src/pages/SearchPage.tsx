@@ -1,44 +1,70 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X, Activity } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import DonorCard, { type Donor } from "@/components/DonorCard";
 import { CrimsonButton } from "@/components/CrimsonButton";
 
-const MOCK_DONORS: Donor[] = [
-  { id: "1", name: "Julian Thorne", bloodGroup: "O-", batch: "2022-23", gender: "Male", lastDonated: "4 months ago", available: true, phone: "+91000000001", whatsapp: "91000000001" },
-  { id: "2", name: "Elena Vance", bloodGroup: "A+", batch: "2021-22", gender: "Female", lastDonated: "1 year ago", available: true, phone: "+91000000002", whatsapp: "91000000002" },
-  { id: "3", name: "Marcus Reed", bloodGroup: "B-", batch: "2023-24", gender: "Male", lastDonated: "Never donated", available: false, phone: "+91000000003", whatsapp: "91000000003" },
-  { id: "4", name: "Priya Sharma", bloodGroup: "AB+", batch: "2022-23", gender: "Female", lastDonated: "6 months ago", available: true, phone: "+91000000004", whatsapp: "91000000004" },
-  { id: "5", name: "Aarav Menon", bloodGroup: "O+", batch: "2023-24", gender: "Male", lastDonated: "2 months ago", available: true, phone: "+91000000005", whatsapp: "91000000005" },
-  { id: "6", name: "Fatima Begum", bloodGroup: "A-", batch: "2020-21", gender: "Female", lastDonated: "8 months ago", available: true, phone: "+91000000006", whatsapp: "91000000006" },
-  { id: "7", name: "Rohan Das", bloodGroup: "B+", batch: "2022-23", gender: "Male", lastDonated: "3 months ago", available: true, phone: "+91000000007", whatsapp: "91000000007" },
-  { id: "8", name: "Nadia Khatun", bloodGroup: "AB-", batch: "2024-25", gender: "Female", lastDonated: "Never donated", available: false, phone: "+91000000008", whatsapp: "91000000008" },
-  { id: "9", name: "Samuel Gomez", bloodGroup: "O-", batch: "2019-20", gender: "Male", lastDonated: "5 months ago", available: true, phone: "+91000000009", whatsapp: "91000000009" },
-];
-
 const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"];
 const genders = ["Any", "Male", "Female"] as const;
 
 const SearchPage = () => {
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<BloodGroup | null>(null);
   const [selectedBatch, setSelectedBatch] = useState("All Batches");
   const [selectedGender, setSelectedGender] = useState<string>("Any");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const fetchDonors = async () => {
+    const { data, error } = await supabase
+      .from("donors")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setDonors(
+        data.map((d) => ({
+          id: d.id,
+          name: d.full_name,
+          bloodGroup: d.blood_group as BloodGroup,
+          batch: d.batch_session,
+          gender: d.gender as "Male" | "Female" | "Other",
+          lastDonated: d.last_donation_date || "Not recorded",
+          available: d.available_now,
+          phone: d.phone,
+          whatsapp: d.phone.replace(/[^0-9]/g, ""),
+        }))
+      );
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDonors();
+
+    const channel = supabase
+      .channel("donors-feed")
+      .on("postgres_changes", { event: "*", schema: "public", table: "donors" }, () => fetchDonors())
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const filtered = useMemo(() => {
-    return MOCK_DONORS.filter((d) => {
+    return donors.filter((d) => {
       if (selectedBloodGroup && d.bloodGroup !== selectedBloodGroup) return false;
       if (selectedBatch !== "All Batches" && d.batch !== selectedBatch) return false;
       if (selectedGender !== "Any" && d.gender !== selectedGender) return false;
       if (availableOnly && !d.available) return false;
       return true;
     });
-  }, [selectedBloodGroup, selectedBatch, selectedGender, availableOnly]);
+  }, [donors, selectedBloodGroup, selectedBatch, selectedGender, availableOnly]);
 
-  const activeDonorCount = MOCK_DONORS.filter((d) => d.available).length;
+  const activeDonorCount = donors.filter((d) => d.available).length;
 
   const FilterControls = () => (
     <>
@@ -187,12 +213,22 @@ const SearchPage = () => {
           <h2 className="font-headline text-2xl font-bold italic text-foreground whitespace-nowrap">Available Donors</h2>
           <div className="h-[1px] flex-grow bg-border/50" />
           <span className="font-body text-xs font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-            Showing {filtered.length} {filtered.length === 1 ? "Match" : "Matches"}
+            {loading ? "Loading..." : `Showing ${filtered.length} ${filtered.length === 1 ? "Match" : "Matches"}`}
           </span>
         </div>
 
         {/* Donor grid */}
-        {filtered.length > 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-card rounded-2xl p-6 animate-pulse">
+                <div className="h-16 bg-muted rounded mb-4" />
+                <div className="h-4 bg-muted rounded w-2/3 mb-2" />
+                <div className="h-3 bg-muted rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((donor, i) => (
               <div key={donor.id} className="animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
