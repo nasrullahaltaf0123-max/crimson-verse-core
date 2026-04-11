@@ -7,15 +7,15 @@ import DonorCard, { type Donor } from "@/components/DonorCard";
 import { CrimsonButton } from "@/components/CrimsonButton";
 
 const MOCK_DONORS: Donor[] = [
-  { id: "1", name: "Julian Thorne", bloodGroup: "O-", batch: "Batch 2022-26", gender: "Male", lastDonated: "4 months ago", available: true, phone: "+91000000001", whatsapp: "91000000001" },
-  { id: "2", name: "Elena Vance", bloodGroup: "A+", batch: "Batch 2021-25", gender: "Female", lastDonated: "1 year ago", available: true, phone: "+91000000002", whatsapp: "91000000002" },
-  { id: "3", name: "Marcus Reed", bloodGroup: "B-", batch: "Batch 2023-27", gender: "Male", lastDonated: "Never donated", available: false, phone: "+91000000003", whatsapp: "91000000003" },
-  { id: "4", name: "Priya Sharma", bloodGroup: "AB+", batch: "Batch 2022-26", gender: "Female", lastDonated: "6 months ago", available: true, phone: "+91000000004", whatsapp: "91000000004" },
-  { id: "5", name: "Aarav Menon", bloodGroup: "O+", batch: "Batch 2023-27", gender: "Male", lastDonated: "2 months ago", available: true, phone: "+91000000005", whatsapp: "91000000005" },
-  { id: "6", name: "Fatima Begum", bloodGroup: "A-", batch: "Batch 2021-25", gender: "Female", lastDonated: "8 months ago", available: true, phone: "+91000000006", whatsapp: "91000000006" },
-  { id: "7", name: "Rohan Das", bloodGroup: "B+", batch: "Batch 2022-26", gender: "Male", lastDonated: "3 months ago", available: true, phone: "+91000000007", whatsapp: "91000000007" },
-  { id: "8", name: "Nadia Khatun", bloodGroup: "AB-", batch: "Batch 2023-27", gender: "Female", lastDonated: "Never donated", available: false, phone: "+91000000008", whatsapp: "91000000008" },
-  { id: "9", name: "Samuel Gomez", bloodGroup: "O-", batch: "Batch 2021-25", gender: "Male", lastDonated: "5 months ago", available: true, phone: "+91000000009", whatsapp: "91000000009" },
+  { id: "1", name: "Julian Thorne", bloodGroup: "O-", batch: "2022-23", gender: "Male", lastDonated: "4 months ago", available: true, phone: "+91000000001", whatsapp: "91000000001" },
+  { id: "2", name: "Elena Vance", bloodGroup: "A+", batch: "2021-22", gender: "Female", lastDonated: "1 year ago", available: true, phone: "+91000000002", whatsapp: "91000000002" },
+  { id: "3", name: "Marcus Reed", bloodGroup: "B-", batch: "2023-24", gender: "Male", lastDonated: "Never donated", available: false, phone: "+91000000003", whatsapp: "91000000003" },
+  { id: "4", name: "Priya Sharma", bloodGroup: "AB+", batch: "2022-23", gender: "Female", lastDonated: "6 months ago", available: true, phone: "+91000000004", whatsapp: "91000000004" },
+  { id: "5", name: "Aarav Menon", bloodGroup: "O+", batch: "2023-24", gender: "Male", lastDonated: "2 months ago", available: true, phone: "+91000000005", whatsapp: "91000000005" },
+  { id: "6", name: "Fatima Begum", bloodGroup: "A-", batch: "2020-21", gender: "Female", lastDonated: "8 months ago", available: true, phone: "+91000000006", whatsapp: "91000000006" },
+  { id: "7", name: "Rohan Das", bloodGroup: "B+", batch: "2022-23", gender: "Male", lastDonated: "3 months ago", available: true, phone: "+91000000007", whatsapp: "91000000007" },
+  { id: "8", name: "Nadia Khatun", bloodGroup: "AB-", batch: "2024-25", gender: "Female", lastDonated: "Never donated", available: false, phone: "+91000000008", whatsapp: "91000000008" },
+  { id: "9", name: "Samuel Gomez", bloodGroup: "O-", batch: "2019-20", gender: "Male", lastDonated: "5 months ago", available: true, phone: "+91000000009", whatsapp: "91000000009" },
 ];
 
 const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "Alumni"];
