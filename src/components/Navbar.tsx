@@ -23,6 +23,9 @@ const Navbar = () => {
           <Link to="/urgent" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Urgent
           </Link>
+          <Link to="/profile" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            My Profile
+          </Link>
           {!isJoinPage && (
             <Link to="/join">
               <CrimsonButton size="sm" variant="primary">
@@ -52,6 +55,9 @@ const Navbar = () => {
             </Link>
             <Link to="/urgent" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
               Urgent Requests
+            </Link>
+            <Link to="/profile" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
+              My Profile
             </Link>
             <Link to="/join" onClick={() => setOpen(false)}>
               <CrimsonButton variant="primary" className="w-full mt-2">

@@ -5,7 +5,7 @@ import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, AlertTriangle } from "lucide-react";
 
 interface Props {
-  onSuccess: (patientName: string, bloodGroup: string) => void;
+  onSuccess: (patientName: string, bloodGroup: string, area?: string) => void;
   onCancel: () => void;
 }
 
@@ -81,7 +81,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
 
     setSubmitting(false);
     if (!error) {
-      onSuccess(form.patient_name, form.blood_group);
+      onSuccess(form.patient_name, form.blood_group, form.current_area || undefined);
     }
   };
 
