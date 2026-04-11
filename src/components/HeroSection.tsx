@@ -35,10 +35,6 @@ const HeroSection = () => {
                 Search Donor
               </CrimsonButton>
             </Link>
-            <CrimsonButton variant="ghost">
-              <Heart className="mr-2 h-4 w-4" />
-              Request Blood
-            </CrimsonButton>
           </div>
 
           <div className="mt-14 flex items-center gap-6 border-l-4 border-primary pl-6">
