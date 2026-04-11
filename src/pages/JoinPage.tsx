@@ -7,10 +7,10 @@ import ViralSuccessModal from "@/components/ViralSuccessModal";
 import joinHero from "@/assets/join-hero.jpg";
 
 const JoinPage = () => {
-  const [successData, setSuccessData] = useState<{ name: string; blood: string } | null>(null);
+  const [successData, setSuccessData] = useState<{ name: string; blood: string; accessToken?: string } | null>(null);
 
   const handleSuccess = (data: QuickDonorData) => {
-    setSuccessData({ name: data.fullName, blood: data.bloodGroup });
+    setSuccessData({ name: data.fullName, blood: data.bloodGroup, accessToken: data.accessToken });
   };
 
   return (
@@ -94,6 +94,7 @@ const JoinPage = () => {
         onClose={() => setSuccessData(null)}
         donorName={successData?.name || ""}
         bloodGroup={successData?.blood || ""}
+        accessToken={successData?.accessToken}
       />
     </div>
   );

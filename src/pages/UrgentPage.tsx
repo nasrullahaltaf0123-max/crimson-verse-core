@@ -37,7 +37,7 @@ const UrgentPage = () => {
   const [requests, setRequests] = useState<EmergencyRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [successData, setSuccessData] = useState<{ patientName: string; bloodGroup: string } | null>(null);
+  const [successData, setSuccessData] = useState<{ patientName: string; bloodGroup: string; area?: string } | null>(null);
 
   const fetchRequests = async () => {
     const { data, error } = await supabase
@@ -70,9 +70,9 @@ const UrgentPage = () => {
   const activeCount = requests.filter((r) => r.status === "active").length;
   const criticalCount = requests.filter((r) => r.urgency_level === "critical" && r.status === "active").length;
 
-  const handleFormSuccess = (patientName: string, bloodGroup: string) => {
+  const handleFormSuccess = (patientName: string, bloodGroup: string, area?: string) => {
     setShowForm(false);
-    setSuccessData({ patientName, bloodGroup });
+    setSuccessData({ patientName, bloodGroup, area });
     fetchRequests();
   };
 
@@ -168,6 +168,7 @@ const UrgentPage = () => {
         onClose={() => setSuccessData(null)}
         patientName={successData?.patientName || ""}
         bloodGroup={successData?.bloodGroup || ""}
+        area={successData?.area}
       />
     </div>
   );
