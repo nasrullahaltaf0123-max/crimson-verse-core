@@ -68,7 +68,7 @@ const DonorCard = ({ donor, className }: DonorCardProps) => {
         <div className="mt-4 flex items-center gap-2">
           <div className={cn(
             "w-2 h-2 rounded-full",
-            donor.available ? "bg-green-500 animate-pulse" : "bg-muted-foreground/40"
+            donor.available ? "bg-primary animate-pulse" : "bg-muted-foreground/40"
           )} />
           <span className="text-xs font-body font-medium text-muted-foreground">
             {donor.available ? "Available Now" : "Unavailable"}
