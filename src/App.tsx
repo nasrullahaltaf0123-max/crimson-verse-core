@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import JoinPage from "./pages/JoinPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import UrgentPage from "./pages/UrgentPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/urgent" element={<NotFound />} />
+          <Route path="/urgent" element={<UrgentPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/dashboard" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
