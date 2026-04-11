@@ -1,15 +1,17 @@
 import { CheckCircle, X, MessageCircle, Share2, Copy } from "lucide-react";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { useState } from "react";
+import DonorMatchPreview from "./DonorMatchPreview";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   patientName: string;
   bloodGroup: string;
+  area?: string;
 }
 
-const EmergencySuccessModal = ({ open, onClose, patientName, bloodGroup }: Props) => {
+const EmergencySuccessModal = ({ open, onClose, patientName, bloodGroup, area }: Props) => {
   const [copied, setCopied] = useState(false);
 
   if (!open) return null;
@@ -45,8 +47,13 @@ const EmergencySuccessModal = ({ open, onClose, patientName, bloodGroup }: Props
             Request Posted! 🚨
           </h2>
           <p className="font-body text-sm text-muted-foreground leading-relaxed">
-            Your emergency request for <span className="font-bold text-primary">{bloodGroup}</span> blood is now live. Share it with your class group immediately.
+            Your emergency request for <span className="font-bold text-primary">{bloodGroup}</span> blood is now live.
           </p>
+        </div>
+
+        {/* Smart donor match preview */}
+        <div className="mb-6">
+          <DonorMatchPreview bloodGroup={bloodGroup} area={area} />
         </div>
 
         {/* Request badge */}
