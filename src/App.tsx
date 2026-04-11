@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
+import JoinPage from "./pages/JoinPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -19,7 +20,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/urgent" element={<NotFound />} />
-          <Route path="/join" element={<NotFound />} />
+          <Route path="/join" element={<JoinPage />} />
           <Route path="/dashboard" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
