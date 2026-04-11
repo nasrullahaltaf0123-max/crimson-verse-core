@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import JoinPage from "./pages/JoinPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import UrgentPage from "./pages/UrgentPage.tsx";
 
 const queryClient = new QueryClient();
 
