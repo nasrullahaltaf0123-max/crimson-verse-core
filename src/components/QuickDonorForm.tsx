@@ -12,6 +12,7 @@ export interface QuickDonorData {
   batch: string;
   gender: string;
   currentlyAvailable: boolean;
+  accessToken?: string;
   // Advanced (collapsible)
   studentId: string;
   email: string;
