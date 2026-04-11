@@ -10,6 +10,7 @@ import JoinPage from "./pages/JoinPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import UrgentPage from "./pages/UrgentPage.tsx";
 import DonorProfilePage from "./pages/DonorProfilePage.tsx";
+import DashboardPage from "./pages/DashboardPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const App = () => (
           <Route path="/urgent" element={<UrgentPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/profile" element={<DonorProfilePage />} />
-          <Route path="/dashboard" element={<NotFound />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
