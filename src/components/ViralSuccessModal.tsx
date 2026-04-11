@@ -6,9 +6,10 @@ interface ViralSuccessModalProps {
   onClose: () => void;
   donorName: string;
   bloodGroup: string;
+  accessToken?: string;
 }
 
-const ViralSuccessModal = ({ open, onClose, donorName, bloodGroup }: ViralSuccessModalProps) => {
+const ViralSuccessModal = ({ open, onClose, donorName, bloodGroup, accessToken }: ViralSuccessModalProps) => {
   if (!open) return null;
 
   const shareText = encodeURIComponent(
@@ -114,6 +115,16 @@ const ViralSuccessModal = ({ open, onClose, donorName, bloodGroup }: ViralSucces
         >
           📋 Copy Link to Share
         </button>
+
+        {/* Profile link */}
+        {accessToken && (
+          <a
+            href={`/profile?token=${accessToken}`}
+            className="w-full py-3 bg-accent rounded-xl font-body font-bold text-sm text-foreground active:scale-95 transition-all flex items-center justify-center gap-2 mb-4"
+          >
+            👤 View My Donor Profile
+          </a>
+        )}
 
         <p className="text-center font-headline italic text-sm text-primary/60">
           "Your blood, someone's next chapter."

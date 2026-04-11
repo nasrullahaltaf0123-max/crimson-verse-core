@@ -88,7 +88,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
     if (!validate()) return;
     setSubmitting(true);
 
-    const { error } = await supabase.from("donors").insert({
+    const { data, error } = await supabase.from("donors").insert({
       full_name: form.fullName.trim(),
       phone: form.phone.trim(),
       blood_group: form.bloodGroup,
@@ -109,12 +109,12 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
       city: form.city.trim() || null,
       emergency_zone: form.emergencyZone || null,
       consent: form.consentChecked,
-    });
+    }).select("access_token").single();
 
     setSubmitting(false);
-    if (!error) {
+    if (!error && data) {
       localStorage.removeItem(DRAFT_KEY);
-      onSuccess(form);
+      onSuccess({ ...form, accessToken: (data as any).access_token });
     }
   };
 
