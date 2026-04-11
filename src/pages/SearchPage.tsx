@@ -18,7 +18,7 @@ const MOCK_DONORS: Donor[] = [
   { id: "9", name: "Samuel Gomez", bloodGroup: "O-", batch: "2019-20", gender: "Male", lastDonated: "5 months ago", available: true, phone: "+91000000009", whatsapp: "91000000009" },
 ];
 
-const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "Alumni"];
+const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"];
 const genders = ["Any", "Male", "Female"] as const;
 
 const SearchPage = () => {
