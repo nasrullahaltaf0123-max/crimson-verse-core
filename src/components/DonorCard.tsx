@@ -13,6 +13,7 @@ export interface Donor {
   phone: string;
   whatsapp: string;
   avatar?: string;
+  createdAt?: string;
 }
 
 interface DonorCardProps {
@@ -21,6 +22,17 @@ interface DonorCardProps {
 }
 
 const rareGroups: BloodGroup[] = ["AB-", "B-", "A-", "O-"];
+
+const timeAgo = (date: string) => {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+};
 
 const DonorCard = ({ donor, className }: DonorCardProps) => {
   const isRare = rareGroups.includes(donor.bloodGroup);
@@ -58,7 +70,7 @@ const DonorCard = ({ donor, className }: DonorCardProps) => {
             <div className="mt-1.5 flex items-center gap-1.5">
               <Clock className="h-3 w-3 text-primary" />
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-body">
-                {donor.lastDonated}
+                {donor.createdAt ? `Joined ${timeAgo(donor.createdAt)}` : donor.lastDonated}
               </span>
             </div>
           </div>

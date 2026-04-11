@@ -37,6 +37,7 @@ const SearchPage = () => {
           available: d.available_now,
           phone: d.phone,
           whatsapp: d.phone.replace(/[^0-9]/g, ""),
+          createdAt: d.created_at,
         }))
       );
     }
@@ -133,7 +134,7 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-6 pt-24 pb-12 mb-20 md:mb-0">
+      <main className="max-w-7xl mx-auto px-6 pt-24 pb-24 lg:pb-12">
         {/* Editorial header */}
         <section className="mb-12 lg:mb-16 pt-4">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
