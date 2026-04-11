@@ -153,7 +153,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
           <SelectField label="Gender" field="gender" options={["Male", "Female", "Other"]} required />
         </div>
 
-        <SelectField label="Batch / Session" field="batch" options={["2021-25", "2022-26", "2023-27", "2024-28", "Faculty / Alumni"]} required />
+        <SelectField label="Batch / Session" field="batch" options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "Alumni"]} required />
 
         {/* Blood group - prominent */}
         <div>
