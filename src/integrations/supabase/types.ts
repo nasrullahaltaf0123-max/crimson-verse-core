@@ -14,8 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      donations: {
+        Row: {
+          area: string | null
+          blood_group: string
+          created_at: string
+          donation_date: string
+          donor_id: string
+          donor_note: string | null
+          emergency_request_id: string | null
+          hospital: string | null
+          id: string
+          patient_name: string | null
+          patient_relation: string | null
+          units_donated: number
+          updated_at: string
+          verified_by_owner: boolean | null
+        }
+        Insert: {
+          area?: string | null
+          blood_group: string
+          created_at?: string
+          donation_date?: string
+          donor_id: string
+          donor_note?: string | null
+          emergency_request_id?: string | null
+          hospital?: string | null
+          id?: string
+          patient_name?: string | null
+          patient_relation?: string | null
+          units_donated?: number
+          updated_at?: string
+          verified_by_owner?: boolean | null
+        }
+        Update: {
+          area?: string | null
+          blood_group?: string
+          created_at?: string
+          donation_date?: string
+          donor_id?: string
+          donor_note?: string | null
+          emergency_request_id?: string | null
+          hospital?: string | null
+          id?: string
+          patient_name?: string | null
+          patient_relation?: string | null
+          units_donated?: number
+          updated_at?: string
+          verified_by_owner?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donations_emergency_request_id_fkey"
+            columns: ["emergency_request_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donors: {
         Row: {
+          access_token: string | null
           available_now: boolean
           batch_session: string
           blood_group: string
@@ -43,6 +110,7 @@ export type Database = {
           year_semester: string | null
         }
         Insert: {
+          access_token?: string | null
           available_now?: boolean
           batch_session: string
           blood_group: string
@@ -70,6 +138,7 @@ export type Database = {
           year_semester?: string | null
         }
         Update: {
+          access_token?: string | null
           available_now?: boolean
           batch_session?: string
           blood_group?: string
