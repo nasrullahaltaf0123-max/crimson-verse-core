@@ -14,6 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      donors: {
+        Row: {
+          available_now: boolean
+          batch_session: string
+          blood_group: string
+          blood_report_url: string | null
+          city: string | null
+          consent: boolean
+          created_at: string
+          current_area: string | null
+          donor_status: string | null
+          email: string | null
+          emergency_zone: string | null
+          facebook_link: string | null
+          full_name: string
+          gender: string
+          hall_hostel: string | null
+          health_notes: string | null
+          id: string
+          last_donation_date: string | null
+          phone: string
+          preferred_time: string | null
+          student_id_card_url: string | null
+          student_roll: string | null
+          updated_at: string
+          weight: string | null
+          year_semester: string | null
+        }
+        Insert: {
+          available_now?: boolean
+          batch_session: string
+          blood_group: string
+          blood_report_url?: string | null
+          city?: string | null
+          consent?: boolean
+          created_at?: string
+          current_area?: string | null
+          donor_status?: string | null
+          email?: string | null
+          emergency_zone?: string | null
+          facebook_link?: string | null
+          full_name: string
+          gender: string
+          hall_hostel?: string | null
+          health_notes?: string | null
+          id?: string
+          last_donation_date?: string | null
+          phone: string
+          preferred_time?: string | null
+          student_id_card_url?: string | null
+          student_roll?: string | null
+          updated_at?: string
+          weight?: string | null
+          year_semester?: string | null
+        }
+        Update: {
+          available_now?: boolean
+          batch_session?: string
+          blood_group?: string
+          blood_report_url?: string | null
+          city?: string | null
+          consent?: boolean
+          created_at?: string
+          current_area?: string | null
+          donor_status?: string | null
+          email?: string | null
+          emergency_zone?: string | null
+          facebook_link?: string | null
+          full_name?: string
+          gender?: string
+          hall_hostel?: string | null
+          health_notes?: string | null
+          id?: string
+          last_donation_date?: string | null
+          phone?: string
+          preferred_time?: string | null
+          student_id_card_url?: string | null
+          student_roll?: string | null
+          updated_at?: string
+          weight?: string | null
+          year_semester?: string | null
+        }
+        Relationships: []
+      }
       emergency_requests: {
         Row: {
           additional_instructions: string | null
@@ -86,6 +170,65 @@ export type Database = {
           updated_at?: string
           urgency_level?: Database["public"]["Enums"]["urgency_level"]
           ward_cabin?: string | null
+        }
+        Relationships: []
+      }
+      false_reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reporter_note: string | null
+          request_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reporter_note?: string | null
+          request_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reporter_note?: string | null
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "false_reports_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_stats: {
+        Row: {
+          active_requests: number
+          id: string
+          rare_blood_count: number
+          successful_matches: number
+          total_donors: number
+          updated_at: string
+        }
+        Insert: {
+          active_requests?: number
+          id?: string
+          rare_blood_count?: number
+          successful_matches?: number
+          total_donors?: number
+          updated_at?: string
+        }
+        Update: {
+          active_requests?: number
+          id?: string
+          rare_blood_count?: number
+          successful_matches?: number
+          total_donors?: number
+          updated_at?: string
         }
         Relationships: []
       }
