@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      emergency_requests: {
+        Row: {
+          additional_instructions: string | null
+          blood_group: string
+          contact_number: string
+          created_at: string
+          current_area: string | null
+          deadline: string | null
+          doctor_note: string | null
+          donor_preference: string | null
+          expires_at: string | null
+          gender_preference: string | null
+          hospital: string
+          id: string
+          is_pinned: boolean | null
+          notes: string | null
+          patient_name: string
+          replacement_needed: boolean | null
+          solved_at: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          units_needed: number
+          updated_at: string
+          urgency_level: Database["public"]["Enums"]["urgency_level"]
+          ward_cabin: string | null
+        }
+        Insert: {
+          additional_instructions?: string | null
+          blood_group: string
+          contact_number: string
+          created_at?: string
+          current_area?: string | null
+          deadline?: string | null
+          doctor_note?: string | null
+          donor_preference?: string | null
+          expires_at?: string | null
+          gender_preference?: string | null
+          hospital: string
+          id?: string
+          is_pinned?: boolean | null
+          notes?: string | null
+          patient_name: string
+          replacement_needed?: boolean | null
+          solved_at?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          units_needed?: number
+          updated_at?: string
+          urgency_level?: Database["public"]["Enums"]["urgency_level"]
+          ward_cabin?: string | null
+        }
+        Update: {
+          additional_instructions?: string | null
+          blood_group?: string
+          contact_number?: string
+          created_at?: string
+          current_area?: string | null
+          deadline?: string | null
+          doctor_note?: string | null
+          donor_preference?: string | null
+          expires_at?: string | null
+          gender_preference?: string | null
+          hospital?: string
+          id?: string
+          is_pinned?: boolean | null
+          notes?: string | null
+          patient_name?: string
+          replacement_needed?: boolean | null
+          solved_at?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          units_needed?: number
+          updated_at?: string
+          urgency_level?: Database["public"]["Enums"]["urgency_level"]
+          ward_cabin?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +97,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      request_status: "active" | "solved" | "expired"
+      urgency_level: "critical" | "urgent" | "moderate"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +225,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      request_status: ["active", "solved", "expired"],
+      urgency_level: ["critical", "urgent", "moderate"],
+    },
   },
 } as const
