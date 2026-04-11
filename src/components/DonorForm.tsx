@@ -243,7 +243,7 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
             <InputField label="Student ID / Roll" field="studentId" placeholder="e.g. ENG-2024-042" required />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <SelectField label="Batch / Session" field="batch" options={["2021-25", "2022-26", "2023-27", "2024-28"]} required />
+            <SelectField label="Batch / Session" field="batch" options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "Alumni"]} required />
             <SelectField label="Year / Semester" field="yearSemester" options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Alumni"]} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
