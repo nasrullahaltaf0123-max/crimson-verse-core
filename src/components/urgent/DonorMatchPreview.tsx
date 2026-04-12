@@ -42,6 +42,7 @@ const DonorMatchPreview = ({ bloodGroup, area }: Props) => {
         .from("donors")
         .select("id, full_name, blood_group, phone, current_area, available_now, last_donation_date, created_at")
         .eq("blood_group", bloodGroup)
+        .eq("approval_status", "approved")
         .order("available_now", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(6);

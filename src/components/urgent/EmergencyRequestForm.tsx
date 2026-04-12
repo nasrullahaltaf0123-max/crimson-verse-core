@@ -203,7 +203,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
         <FormInput label="Hospital / Clinic" value={form.hospital} onChange={(v) => update("hospital", v)} placeholder="e.g. Sher-e-Bangla Medical" required error={errors.hospital} />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormInput label="Contact Number" value={form.contact_number} onChange={(v) => update("contact_number", v)} placeholder="+880 1XXX..." type="tel" required error={errors.contact_number} />
+          <FormInput label="Contact Number" value={form.contact_number} onChange={(v) => update("contact_number", v)} placeholder="01XXXXXXXXX" type="tel" inputMode="numeric" autoComplete="tel" autoCorrect="off" maxLength={11} required error={errors.contact_number} />
           <FormInput label="Deadline" value={form.deadline} onChange={(v) => update("deadline", v)} placeholder="" type="datetime-local" />
         </div>
 

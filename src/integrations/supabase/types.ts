@@ -83,6 +83,7 @@ export type Database = {
       donors: {
         Row: {
           access_token: string | null
+          approval_status: string
           available_now: boolean
           batch_session: string
           blood_group: string
@@ -111,6 +112,7 @@ export type Database = {
         }
         Insert: {
           access_token?: string | null
+          approval_status?: string
           available_now?: boolean
           batch_session: string
           blood_group: string
@@ -139,6 +141,7 @@ export type Database = {
         }
         Update: {
           access_token?: string | null
+          approval_status?: string
           available_now?: boolean
           batch_session?: string
           blood_group?: string
