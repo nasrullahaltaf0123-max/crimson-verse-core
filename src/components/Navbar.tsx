@@ -27,6 +27,7 @@ const Navbar = () => {
           <Link to="/profile" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             My Profile
           </Link>
+          <ThemeToggle />
           {!isJoinPage && (
             <Link to="/join">
               <CrimsonButton size="sm" variant="primary">
