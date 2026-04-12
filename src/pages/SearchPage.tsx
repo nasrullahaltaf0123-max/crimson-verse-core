@@ -26,6 +26,7 @@ const SearchPage = () => {
     const { data, error } = await supabase
       .from("donors")
       .select("*")
+      .eq("approval_status", "approved")
       .order("created_at", { ascending: false });
 
     if (!error && data) {

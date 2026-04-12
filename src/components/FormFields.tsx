@@ -8,6 +8,10 @@ interface InputFieldProps {
   type?: string;
   required?: boolean;
   error?: string;
+  inputMode?: "text" | "numeric" | "tel" | "email" | "url" | "search" | "decimal" | "none";
+  maxLength?: number;
+  autoComplete?: string;
+  autoCorrect?: "on" | "off";
 }
 
 export const FormInput = memo(({ label, value, onChange, placeholder, type = "text", required = false, error }: InputFieldProps) => (
