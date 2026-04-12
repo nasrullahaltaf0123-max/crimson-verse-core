@@ -14,7 +14,7 @@ interface InputFieldProps {
   autoCorrect?: "on" | "off";
 }
 
-export const FormInput = memo(({ label, value, onChange, placeholder, type = "text", required = false, error }: InputFieldProps) => (
+export const FormInput = memo(({ label, value, onChange, placeholder, type = "text", required = false, error, inputMode, maxLength, autoComplete, autoCorrect }: InputFieldProps) => (
   <div>
     <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
       {label} {required && <span className="text-primary">*</span>}
@@ -24,6 +24,10 @@ export const FormInput = memo(({ label, value, onChange, placeholder, type = "te
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      inputMode={inputMode}
+      maxLength={maxLength}
+      autoComplete={autoComplete}
+      autoCorrect={autoCorrect}
       className={`w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient transition-all ${error ? "ring-2 ring-destructive" : ""}`}
     />
     {error && <p className="text-destructive text-xs font-body mt-1">{error}</p>}
