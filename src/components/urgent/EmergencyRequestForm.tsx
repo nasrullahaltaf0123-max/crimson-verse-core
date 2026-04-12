@@ -288,10 +288,18 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
         )}
       </div>
 
+      {/* Spam warning */}
+      {spamError && (
+        <div className="mt-6 flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-xl p-4">
+          <ShieldAlert className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+          <p className="font-body text-sm text-destructive">{spamError}</p>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="mt-8 flex flex-col gap-3">
         <CrimsonButton variant="primary" size="lg" className="w-full" onClick={handleSubmit} disabled={submitting}>
-          {submitting ? "Posting..." : "🚨 Post Emergency Request"}
+          {submitting ? "Checking & Posting..." : "🚨 Post Emergency Request"}
         </CrimsonButton>
         <button onClick={onCancel} className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
           Cancel
