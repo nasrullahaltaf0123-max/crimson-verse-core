@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, MessageCircle, Copy, Check, MapPin } from "lucide-react";
+import { rankDonors, getDonorBadges } from "@/lib/donorRanking";
 
 interface MatchedDonor {
   id: string;
@@ -46,17 +47,11 @@ const DonorMatchPreview = ({ bloodGroup, area }: Props) => {
         .limit(6);
 
       if (data) {
-        // Sort: available first, nearby area matches higher, recently donated lower
-        const sorted = [...data].sort((a, b) => {
-          if (a.available_now !== b.available_now) return a.available_now ? -1 : 1;
-          if (area) {
-            const aMatch = a.current_area?.toLowerCase().includes(area.toLowerCase()) ? 1 : 0;
-            const bMatch = b.current_area?.toLowerCase().includes(area.toLowerCase()) ? 1 : 0;
-            if (aMatch !== bMatch) return bMatch - aMatch;
-          }
-          return 0;
-        });
-        setDonors(sorted);
+        const ranked = rankDonors(
+          data.map(d => ({ ...d, donation_count: 0 })),
+          { targetBloodGroup: bloodGroup, targetArea: area }
+        );
+        setDonors(ranked);
       }
       setLoading(false);
     };
@@ -114,8 +109,13 @@ const DonorMatchPreview = ({ bloodGroup, area }: Props) => {
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-body font-bold text-foreground text-sm truncate">{d.full_name}</span>
+                  {getDonorBadges({ ...d, donation_count: 0 }, i).map((b) => (
+                    <span key={b} className="text-[8px] font-body font-bold uppercase tracking-widest bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                      {b}
+                    </span>
+                  ))}
                   {d.available_now && (
                     <span className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />

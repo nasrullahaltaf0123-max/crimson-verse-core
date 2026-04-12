@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CrimsonButton } from "./CrimsonButton";
 import { Menu, X, UserPlus } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -26,6 +27,7 @@ const Navbar = () => {
           <Link to="/profile" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             My Profile
           </Link>
+          <ThemeToggle />
           {!isJoinPage && (
             <Link to="/join">
               <CrimsonButton size="sm" variant="primary">
@@ -59,6 +61,10 @@ const Navbar = () => {
             <Link to="/profile" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
               My Profile
             </Link>
+            <div className="flex items-center gap-3 py-2">
+              <ThemeToggle />
+              <span className="font-body text-sm text-muted-foreground">Toggle theme</span>
+            </div>
             <Link to="/join" onClick={() => setOpen(false)}>
               <CrimsonButton variant="primary" className="w-full mt-2">
                 <UserPlus className="mr-2 h-4 w-4" />

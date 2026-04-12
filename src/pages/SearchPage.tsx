@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import DonorCard, { type Donor } from "@/components/DonorCard";
 import { CrimsonButton } from "@/components/CrimsonButton";
+import { rankDonors, getDonorBadges, type RankBadge } from "@/lib/donorRanking";
 
 const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"];
 const genders = ["Any", "Male", "Female"] as const;
@@ -56,13 +57,32 @@ const SearchPage = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    return donors.filter((d) => {
+    let result = donors.filter((d) => {
       if (selectedBloodGroup && d.bloodGroup !== selectedBloodGroup) return false;
       if (selectedBatch !== "All Batches" && d.batch !== selectedBatch) return false;
       if (selectedGender !== "Any" && d.gender !== selectedGender) return false;
       if (availableOnly && !d.available) return false;
       return true;
     });
+
+    // AI ranking
+    const rankable = result.map(d => ({
+      ...d,
+      blood_group: d.bloodGroup,
+      current_area: null as string | null,
+      available_now: d.available,
+      last_donation_date: d.lastDonated === "Not recorded" ? null : d.lastDonated,
+      created_at: d.createdAt || new Date().toISOString(),
+      donation_count: 0,
+    }));
+    const ranked = rankDonors(rankable, {
+      targetBloodGroup: selectedBloodGroup || undefined,
+    });
+
+    return ranked.map((r, i) => ({
+      donor: r as unknown as Donor,
+      badges: getDonorBadges(r, i),
+    }));
   }, [donors, selectedBloodGroup, selectedBatch, selectedGender, availableOnly]);
 
   const activeDonorCount = donors.filter((d) => d.available).length;
@@ -231,9 +251,18 @@ const SearchPage = () => {
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((donor, i) => (
-              <div key={donor.id} className="animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-                <DonorCard donor={donor} />
+            {filtered.map((item, i) => (
+              <div key={item.donor.id} className="animate-fade-up relative" style={{ animationDelay: `${i * 80}ms` }}>
+                {item.badges.length > 0 && (
+                  <div className="flex gap-1.5 mb-2">
+                    {item.badges.map((b) => (
+                      <span key={b} className="text-[9px] font-body font-bold uppercase tracking-widest bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <DonorCard donor={item.donor} />
               </div>
             ))}
           </div>
