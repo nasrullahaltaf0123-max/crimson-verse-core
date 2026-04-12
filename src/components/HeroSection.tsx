@@ -58,7 +58,7 @@ const HeroSection = () => {
             />
             <div className="absolute -bottom-6 -left-6 bg-primary p-6 lg:p-8 rounded-2xl shadow-elevated text-primary-foreground">
               <Heart className="h-8 w-8 mb-3 opacity-80" />
-              <div className="font-headline text-3xl lg:text-4xl font-bold">1,240+</div>
+              <div className="font-headline text-3xl lg:text-4xl font-bold">{t("hero.tagline")}</div>
               <div className="text-[10px] uppercase tracking-widest opacity-80 font-body">{t("hero.studentDonors")}</div>
             </div>
           </div>
