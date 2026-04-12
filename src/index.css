@@ -107,6 +107,15 @@
   ::selection {
     @apply bg-accent text-accent-foreground;
   }
+
+  /* Bangla font overrides */
+  .lang-bn body {
+    font-family: "Noto Sans Bengali", sans-serif;
+  }
+  .lang-bn h1, .lang-bn h2, .lang-bn h3, .lang-bn h4, .lang-bn h5, .lang-bn h6 {
+    font-family: "Noto Serif Bengali", serif;
+    font-style: normal;
+  }
 }
 
 @layer utilities {
