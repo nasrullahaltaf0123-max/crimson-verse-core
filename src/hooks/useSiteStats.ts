@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SiteStats {
@@ -18,29 +18,36 @@ const defaultStats: SiteStats = {
 export function useSiteStats() {
   const [stats, setStats] = useState<SiteStats>(defaultStats);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
 
   const fetchStats = async () => {
-    const { data } = await supabase
-      .from("site_stats")
-      .select("*")
-      .limit(1)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("site_stats")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
 
-    if (data) {
-      setStats({
-        total_donors: data.total_donors,
-        active_requests: data.active_requests,
-        rare_blood_count: data.rare_blood_count,
-        successful_matches: data.successful_matches,
-      });
+      if (!mountedRef.current) return;
+
+      if (data && !error) {
+        setStats({
+          total_donors: data.total_donors ?? 0,
+          active_requests: data.active_requests ?? 0,
+          rare_blood_count: data.rare_blood_count ?? 0,
+          successful_matches: data.successful_matches ?? 0,
+        });
+      }
+    } catch {
+      // Silently fallback to defaults
     }
-    setLoading(false);
+    if (mountedRef.current) setLoading(false);
   };
 
   useEffect(() => {
+    mountedRef.current = true;
     fetchStats();
 
-    // Listen for changes on donors and emergency_requests
     const ch1 = supabase
       .channel("stats-donors")
       .on("postgres_changes", { event: "*", schema: "public", table: "donors" }, () => fetchStats())
@@ -52,6 +59,7 @@ export function useSiteStats() {
       .subscribe();
 
     return () => {
+      mountedRef.current = false;
       supabase.removeChannel(ch1);
       supabase.removeChannel(ch2);
     };
