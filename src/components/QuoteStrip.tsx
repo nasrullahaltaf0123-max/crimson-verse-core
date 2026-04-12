@@ -1,8 +1,14 @@
 import { useI18n } from "@/contexts/I18nContext";
+import { useSiteStats } from "@/hooks/useSiteStats";
 import { Link } from "react-router-dom";
 
 const QuoteStrip = () => {
   const { t } = useI18n();
+  const { stats } = useSiteStats();
+
+  const totalDonors = stats.total_donors;
+  const goal = 100;
+  const progress = Math.min((totalDonors / goal) * 100, 100);
 
   return (
     <section className="py-20 lg:py-24 px-6 overflow-hidden">
@@ -19,13 +25,13 @@ const QuoteStrip = () => {
             </p>
             <div className="w-full h-3 bg-secondary-container rounded-full overflow-hidden relative">
               <div
-                className="absolute top-0 left-0 h-full bg-primary rounded-full"
-                style={{ width: "72%", boxShadow: "0 0 15px hsl(358 95% 20% / 0.4)" }}
+                className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-700"
+                style={{ width: `${progress}%`, boxShadow: "0 0 15px hsl(358 95% 20% / 0.4)" }}
               />
             </div>
             <div className="mt-4 flex justify-between font-body font-bold text-sm tracking-widest uppercase">
-              <span>{t("quote.collected")}</span>
-              <span className="text-primary">{t("quote.goal")}</span>
+              <span>{totalDonors} {t("quote.donorsJoined")}</span>
+              <span className="text-primary">{t("quote.goal")}: {goal}</span>
             </div>
           </div>
 

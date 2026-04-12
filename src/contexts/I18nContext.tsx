@@ -41,8 +41,8 @@ const translations: Record<string, Record<Lang, string>> = {
   // Quote section
   "quote.title": { en: "The English Department Pulse", bn: "ইংরেজি বিভাগের স্পন্দন" },
   "quote.desc": { en: "Tracking our community's contribution toward the annual blood drive goal. Every unit donated is a line in our shared history.", bn: "আমাদের সম্প্রদায়ের বার্ষিক রক্তদান লক্ষ্যের অগ্রগতি। প্রতিটি ইউনিট রক্তদান আমাদের ভাগ করা ইতিহাসের একটি লাইন।" },
-  "quote.collected": { en: "720 Pints Collected", bn: "৭২০ পাইন্ট সংগৃহীত" },
-  "quote.goal": { en: "Goal: 1000", bn: "লক্ষ্য: ১০০০" },
+  "quote.donorsJoined": { en: "Donors Joined", bn: "ডোনার যুক্ত" },
+  "quote.goal": { en: "Goal", bn: "লক্ষ্য" },
   "quote.emergencyHub": { en: "Emergency Hub", bn: "জরুরি কেন্দ্র" },
   "quote.emergencyDesc": { en: "Immediate access to rare blood group contacts and emergency logistics.", bn: "বিরল রক্তের গ্রুপের যোগাযোগ এবং জরুরি সহায়তায় তাৎক্ষণিক প্রবেশাধিকার।" },
   "quote.openSOS": { en: "Open SOS Center", bn: "SOS কেন্দ্র খুলুন" },
