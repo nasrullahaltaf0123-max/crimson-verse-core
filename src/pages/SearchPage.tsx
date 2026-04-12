@@ -72,6 +72,7 @@ const SearchPage = () => {
       current_area: null as string | null,
       available_now: d.available,
       last_donation_date: d.lastDonated === "Not recorded" ? null : d.lastDonated,
+      created_at: d.createdAt || new Date().toISOString(),
       donation_count: 0,
     }));
     const ranked = rankDonors(rankable, {
@@ -79,7 +80,7 @@ const SearchPage = () => {
     });
 
     return ranked.map((r, i) => ({
-      ...r,
+      donor: r as unknown as Donor,
       badges: getDonorBadges(r, i),
     }));
   }, [donors, selectedBloodGroup, selectedBatch, selectedGender, availableOnly]);
