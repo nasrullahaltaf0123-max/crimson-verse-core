@@ -61,6 +61,10 @@ const Navbar = () => {
             <Link to="/profile" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
               My Profile
             </Link>
+            <div className="flex items-center gap-3 py-2">
+              <ThemeToggle />
+              <span className="font-body text-sm text-muted-foreground">Toggle theme</span>
+            </div>
             <Link to="/join" onClick={() => setOpen(false)}>
               <CrimsonButton variant="primary" className="w-full mt-2">
                 <UserPlus className="mr-2 h-4 w-4" />
