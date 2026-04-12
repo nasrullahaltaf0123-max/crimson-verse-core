@@ -1,5 +1,6 @@
 import { Zap, BookOpen, Star } from "lucide-react";
 import { useSiteStats } from "@/hooks/useSiteStats";
+import { useI18n } from "@/contexts/I18nContext";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -34,6 +35,7 @@ const StatCard = ({ icon, title, value, label, variant = "default" }: StatCardPr
 
 const StatsSection = () => {
   const { stats } = useSiteStats();
+  const { t } = useI18n();
 
   return (
     <section className="bg-surface-low py-20 lg:py-24 px-6">
@@ -41,22 +43,22 @@ const StatsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
             icon={<Zap size={28} />}
-            title="Available Now"
+            title={t("stats.availableNow")}
             value={String(stats.total_donors)}
-            label="Active Donors"
+            label={t("stats.activeDonors")}
           />
           <StatCard
             icon={<BookOpen size={28} />}
-            title="Requests Solved"
+            title={t("stats.requestsSolved")}
             value={stats.successful_matches > 0 ? `${stats.successful_matches}+` : "0"}
-            label="Stories Continued"
+            label={t("stats.storiesContinued")}
             variant="highlight"
           />
           <StatCard
             icon={<Star size={28} />}
-            title="Rare Blood Heroes"
+            title={t("stats.rareHeroes")}
             value={String(stats.rare_blood_count)}
-            label="Negative Groups"
+            label={t("stats.negativeGroups")}
           />
         </div>
       </div>
