@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BloodGroupPill, bloodGroups } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
-import { ChevronDown, AlertTriangle } from "lucide-react";
+import { ChevronDown, AlertTriangle, ShieldAlert } from "lucide-react";
+import { runSpamChecks, markRequestPosted } from "@/lib/spamDetection";
 
 interface Props {
   onSuccess: (patientName: string, bloodGroup: string, area?: string) => void;
@@ -39,6 +40,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [spamError, setSpamError] = useState("");
 
   const update = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -60,6 +62,20 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
+    setSpamError("");
+
+    // Spam detection
+    const spamCheck = await runSpamChecks(
+      form.contact_number.trim(),
+      form.blood_group,
+      form.patient_name.trim(),
+      form.hospital.trim()
+    );
+    if (!spamCheck.allowed) {
+      setSpamError(spamCheck.reason || "Request blocked by safety system.");
+      setSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.from("emergency_requests").insert({
       patient_name: form.patient_name.trim(),
@@ -81,6 +97,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
 
     setSubmitting(false);
     if (!error) {
+      markRequestPosted();
       onSuccess(form.patient_name, form.blood_group, form.current_area || undefined);
     }
   };
@@ -271,10 +288,18 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
         )}
       </div>
 
+      {/* Spam warning */}
+      {spamError && (
+        <div className="mt-6 flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-xl p-4">
+          <ShieldAlert className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+          <p className="font-body text-sm text-destructive">{spamError}</p>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="mt-8 flex flex-col gap-3">
         <CrimsonButton variant="primary" size="lg" className="w-full" onClick={handleSubmit} disabled={submitting}>
-          {submitting ? "Posting..." : "🚨 Post Emergency Request"}
+          {submitting ? "Checking & Posting..." : "🚨 Post Emergency Request"}
         </CrimsonButton>
         <button onClick={onCancel} className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
           Cancel
