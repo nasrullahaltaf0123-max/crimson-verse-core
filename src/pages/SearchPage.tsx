@@ -7,11 +7,13 @@ import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/Blood
 import DonorCard, { type Donor } from "@/components/DonorCard";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { rankDonors, getDonorBadges, type RankBadge } from "@/lib/donorRanking";
+import { useI18n } from "@/contexts/I18nContext";
 
 const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"];
 const genders = ["Any", "Male", "Female"] as const;
 
 const SearchPage = () => {
+  const { t } = useI18n();
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<BloodGroup | null>(null);
