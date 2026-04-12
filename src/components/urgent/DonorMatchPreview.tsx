@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, MessageCircle, Copy, Check, MapPin } from "lucide-react";
+import { rankDonors, getDonorBadges } from "@/lib/donorRanking";
 
 interface MatchedDonor {
   id: string;
@@ -46,17 +47,11 @@ const DonorMatchPreview = ({ bloodGroup, area }: Props) => {
         .limit(6);
 
       if (data) {
-        // Sort: available first, nearby area matches higher, recently donated lower
-        const sorted = [...data].sort((a, b) => {
-          if (a.available_now !== b.available_now) return a.available_now ? -1 : 1;
-          if (area) {
-            const aMatch = a.current_area?.toLowerCase().includes(area.toLowerCase()) ? 1 : 0;
-            const bMatch = b.current_area?.toLowerCase().includes(area.toLowerCase()) ? 1 : 0;
-            if (aMatch !== bMatch) return bMatch - aMatch;
-          }
-          return 0;
-        });
-        setDonors(sorted);
+        const ranked = rankDonors(
+          data.map(d => ({ ...d, donation_count: 0 })),
+          { targetBloodGroup: bloodGroup, targetArea: area }
+        );
+        setDonors(ranked);
       }
       setLoading(false);
     };
