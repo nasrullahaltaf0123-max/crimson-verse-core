@@ -154,7 +154,12 @@ export const useI18n = () => useContext(I18nContext);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [lang, setLangState] = useState<Lang>(() => {
-    return (localStorage.getItem("cv_lang") as Lang) || "en";
+    try {
+      const saved = localStorage.getItem("cv_lang");
+      return saved === "bn" ? "bn" : "en";
+    } catch {
+      return "en";
+    }
   });
 
   const setLang = (l: Lang) => {
