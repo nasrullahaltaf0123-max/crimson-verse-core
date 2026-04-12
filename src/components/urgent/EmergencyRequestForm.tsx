@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BloodGroupPill, bloodGroups } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, AlertTriangle, ShieldAlert } from "lucide-react";
 import { runSpamChecks, markRequestPosted } from "@/lib/spamDetection";
+import { FormInput, FormSelect, FormTextarea } from "@/components/FormFields";
 
 interface Props {
   onSuccess: (patientName: string, bloodGroup: string, area?: string) => void;
@@ -41,6 +42,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [spamError, setSpamError] = useState("");
+  const submittingRef = useRef(false);
 
   const update = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -60,11 +62,12 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
   };
 
   const handleSubmit = async () => {
+    if (submittingRef.current) return;
     if (!validate()) return;
     setSubmitting(true);
+    submittingRef.current = true;
     setSpamError("");
 
-    // Spam detection
     const spamCheck = await runSpamChecks(
       form.contact_number.trim(),
       form.blood_group,
@@ -74,6 +77,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
     if (!spamCheck.allowed) {
       setSpamError(spamCheck.reason || "Request blocked by safety system.");
       setSubmitting(false);
+      submittingRef.current = false;
       return;
     }
 
@@ -96,29 +100,12 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
     });
 
     setSubmitting(false);
+    submittingRef.current = false;
     if (!error) {
       markRequestPosted();
       onSuccess(form.patient_name, form.blood_group, form.current_area || undefined);
     }
   };
-
-  const InputField = ({ label, field, placeholder, type = "text", required = false }: {
-    label: string; field: keyof FormData; placeholder: string; type?: string; required?: boolean;
-  }) => (
-    <div>
-      <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-        {label} {required && <span className="text-primary">*</span>}
-      </label>
-      <input
-        type={type}
-        value={form[field] as string}
-        onChange={(e) => update(field, e.target.value)}
-        placeholder={placeholder}
-        className={`w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient transition-all ${errors[field] ? "ring-2 ring-destructive" : ""}`}
-      />
-      {errors[field] && <p className="text-destructive text-xs font-body mt-1">{errors[field]}</p>}
-    </div>
-  );
 
   return (
     <div>
@@ -134,7 +121,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
       </div>
 
       <div className="space-y-5">
-        <InputField label="Patient Name" field="patient_name" placeholder="Who needs blood?" required />
+        <FormInput label="Patient Name" value={form.patient_name} onChange={(v) => update("patient_name", v)} placeholder="Who needs blood?" required error={errors.patient_name} />
 
         {/* Blood group */}
         <div>
@@ -179,6 +166,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
               {(["critical", "urgent", "moderate"] as const).map((level) => (
                 <button
                   key={level}
+                  type="button"
                   onClick={() => update("urgency_level", level)}
                   className={`flex-1 px-2 py-3 text-xs font-body font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 ${
                     form.urgency_level === level
@@ -198,30 +186,22 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
           </div>
         </div>
 
-        <InputField label="Hospital / Clinic" field="hospital" placeholder="e.g. Sher-e-Bangla Medical" required />
+        <FormInput label="Hospital / Clinic" value={form.hospital} onChange={(v) => update("hospital", v)} placeholder="e.g. Sher-e-Bangla Medical" required error={errors.hospital} />
 
         <div className="grid grid-cols-2 gap-4">
-          <InputField label="Contact Number" field="contact_number" placeholder="+880 1XXX..." type="tel" required />
-          <InputField label="Deadline" field="deadline" placeholder="" type="datetime-local" />
+          <FormInput label="Contact Number" value={form.contact_number} onChange={(v) => update("contact_number", v)} placeholder="+880 1XXX..." type="tel" required error={errors.contact_number} />
+          <FormInput label="Deadline" value={form.deadline} onChange={(v) => update("deadline", v)} placeholder="" type="datetime-local" />
         </div>
 
-        <InputField label="Current Area" field="current_area" placeholder="e.g. Barisal City" />
+        <FormInput label="Current Area" value={form.current_area} onChange={(v) => update("current_area", v)} placeholder="e.g. Barisal City" />
 
-        <div>
-          <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Notes</label>
-          <textarea
-            value={form.notes}
-            onChange={(e) => update("notes", e.target.value)}
-            placeholder="Any critical details..."
-            rows={2}
-            className="w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient resize-none"
-          />
-        </div>
+        <FormTextarea label="Notes" value={form.notes} onChange={(v) => update("notes", v)} placeholder="Any critical details..." />
       </div>
 
       {/* Advanced (collapsible) */}
       <div className="mt-6">
         <button
+          type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
         >
@@ -231,8 +211,8 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
 
         {showAdvanced && (
           <div className="mt-5 space-y-5 animate-fade-in">
-            <InputField label="Doctor Note" field="doctor_note" placeholder="Doctor's instructions" />
-            <InputField label="Ward / Cabin" field="ward_cabin" placeholder="e.g. Ward 5, Cabin 3" />
+            <FormInput label="Doctor Note" value={form.doctor_note} onChange={(v) => update("doctor_note", v)} placeholder="Doctor's instructions" />
+            <FormInput label="Ward / Cabin" value={form.ward_cabin} onChange={(v) => update("ward_cabin", v)} placeholder="e.g. Ward 5, Cabin 3" />
 
             <div className="flex items-center justify-between bg-background rounded-xl px-4 py-4 shadow-ambient">
               <div>
@@ -240,6 +220,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
                 <span className="font-body text-xs text-muted-foreground">Hospital requires blood replacement</span>
               </div>
               <button
+                type="button"
                 onClick={() => update("replacement_needed", !form.replacement_needed)}
                 className={`relative w-12 h-7 rounded-full transition-colors ${form.replacement_needed ? "bg-primary" : "bg-muted"}`}
               >
@@ -248,42 +229,11 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Donor Preference</label>
-                <select
-                  value={form.donor_preference}
-                  onChange={(e) => update("donor_preference", e.target.value)}
-                  className="w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient"
-                >
-                  <option value="">Any</option>
-                  <option value="student">Students Only</option>
-                  <option value="regular">Regular Donors</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Gender Preference</label>
-                <select
-                  value={form.gender_preference}
-                  onChange={(e) => update("gender_preference", e.target.value)}
-                  className="w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient"
-                >
-                  <option value="">Any</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
+              <FormSelect label="Donor Preference" value={form.donor_preference} onChange={(v) => update("donor_preference", v)} options={["Students Only", "Regular Donors"]} />
+              <FormSelect label="Gender Preference" value={form.gender_preference} onChange={(v) => update("gender_preference", v)} options={["Male", "Female"]} />
             </div>
 
-            <div>
-              <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Additional Instructions</label>
-              <textarea
-                value={form.additional_instructions}
-                onChange={(e) => update("additional_instructions", e.target.value)}
-                placeholder="Any other instructions for donors..."
-                rows={2}
-                className="w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient resize-none"
-              />
-            </div>
+            <FormTextarea label="Additional Instructions" value={form.additional_instructions} onChange={(v) => update("additional_instructions", v)} placeholder="Any other instructions for donors..." />
           </div>
         )}
       </div>
@@ -301,7 +251,7 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
         <CrimsonButton variant="primary" size="lg" className="w-full" onClick={handleSubmit} disabled={submitting}>
           {submitting ? "Checking & Posting..." : "🚨 Post Emergency Request"}
         </CrimsonButton>
-        <button onClick={onCancel} className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button type="button" onClick={onCancel} className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
           Cancel
         </button>
       </div>

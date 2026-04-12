@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, Shield, Users, Check, Upload } from "lucide-react";
 import { useSiteStats } from "@/hooks/useSiteStats";
+import { FormInput, FormSelect } from "@/components/FormFields";
 
 export interface QuickDonorData {
   fullName: string;
@@ -13,7 +14,6 @@ export interface QuickDonorData {
   gender: string;
   currentlyAvailable: boolean;
   accessToken?: string;
-  // Advanced (collapsible)
   studentId: string;
   email: string;
   facebookLink: string;
@@ -58,14 +58,15 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const { stats } = useSiteStats();
 
-  // Autosave
+  // Debounced autosave
   useEffect(() => {
     const t = setTimeout(() => {
       const { bloodReport, studentIdCard, ...saveable } = form;
       localStorage.setItem(DRAFT_KEY, JSON.stringify(saveable));
-    }, 600);
+    }, 1200);
     return () => clearTimeout(t);
   }, [form]);
 
@@ -86,8 +87,10 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
   };
 
   const handleSubmit = async () => {
+    if (submittingRef.current) return;
     if (!validate()) return;
     setSubmitting(true);
+    submittingRef.current = true;
 
     const { data, error } = await supabase.from("donors").insert({
       full_name: form.fullName.trim(),
@@ -113,52 +116,12 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
     }).select("access_token").single();
 
     setSubmitting(false);
+    submittingRef.current = false;
     if (!error && data) {
       localStorage.removeItem(DRAFT_KEY);
       onSuccess({ ...form, accessToken: (data as any).access_token });
     }
   };
-
-  const InputField = ({ label, field, placeholder, type = "text", required = false }: {
-    label: string; field: keyof QuickDonorData; placeholder: string; type?: string; required?: boolean;
-  }) => (
-    <div>
-      <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-        {label} {required && <span className="text-primary">*</span>}
-      </label>
-      <input
-        type={type}
-        value={form[field] as string}
-        onChange={(e) => update(field, e.target.value)}
-        placeholder={placeholder}
-        className={`w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient transition-all ${
-          errors[field] ? "ring-2 ring-destructive" : ""
-        }`}
-      />
-      {errors[field] && <p className="text-destructive text-xs font-body mt-1">{errors[field]}</p>}
-    </div>
-  );
-
-  const SelectField = ({ label, field, options, required = false }: {
-    label: string; field: keyof QuickDonorData; options: string[]; required?: boolean;
-  }) => (
-    <div>
-      <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-        {label} {required && <span className="text-primary">*</span>}
-      </label>
-      <select
-        value={form[field] as string}
-        onChange={(e) => update(field, e.target.value)}
-        className={`w-full bg-background rounded-xl px-4 py-3.5 font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient ${
-          errors[field] ? "ring-2 ring-destructive" : ""
-        }`}
-      >
-        <option value="">Select...</option>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
-      {errors[field] && <p className="text-destructive text-xs font-body mt-1">{errors[field]}</p>}
-    </div>
-  );
 
   return (
     <div>
@@ -174,16 +137,16 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
       <div className="space-y-5">
         <h3 className="font-headline text-xl font-bold italic text-foreground">Quick Info <span className="text-muted-foreground font-body text-xs font-normal not-italic ml-2">~30 seconds</span></h3>
 
-        <InputField label="Your Name" field="fullName" placeholder="Full name" required />
+        <FormInput label="Your Name" value={form.fullName} onChange={(v) => update("fullName", v)} placeholder="Full name" required error={errors.fullName} />
 
         <div className="grid grid-cols-2 gap-4">
-          <InputField label="Phone" field="phone" placeholder="+880 1XXX..." type="tel" required />
-          <SelectField label="Gender" field="gender" options={["Male", "Female", "Other"]} required />
+          <FormInput label="Phone" value={form.phone} onChange={(v) => update("phone", v)} placeholder="+880 1XXX..." type="tel" required error={errors.phone} />
+          <FormSelect label="Gender" value={form.gender} onChange={(v) => update("gender", v)} options={["Male", "Female", "Other"]} required error={errors.gender} />
         </div>
 
-        <SelectField label="Batch / Session" field="batch" options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"]} required />
+        <FormSelect label="Batch / Session" value={form.batch} onChange={(v) => update("batch", v)} options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"]} required error={errors.batch} />
 
-        {/* Blood group - prominent */}
+        {/* Blood group */}
         <div>
           <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
             Blood Group <span className="text-primary">*</span>
@@ -209,6 +172,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
             <span className="font-body text-xs text-muted-foreground">You can change this anytime</span>
           </div>
           <button
+            type="button"
             onClick={() => update("currentlyAvailable", !form.currentlyAvailable)}
             className={`relative w-12 h-7 rounded-full transition-colors ${form.currentlyAvailable ? "bg-primary" : "bg-muted"}`}
           >
@@ -217,9 +181,10 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
         </div>
       </div>
 
-      {/* Advanced fields (collapsible) */}
+      {/* Advanced fields */}
       <div className="mt-8">
         <button
+          type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
         >
@@ -230,29 +195,29 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
         {showAdvanced && (
           <div className="mt-5 space-y-5 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Student ID / Roll" field="studentId" placeholder="e.g. ENG-2024-042" />
-              <InputField label="Email" field="email" placeholder="your@email.com" type="email" />
+              <FormInput label="Student ID / Roll" value={form.studentId} onChange={(v) => update("studentId", v)} placeholder="e.g. ENG-2024-042" />
+              <FormInput label="Email" value={form.email} onChange={(v) => update("email", v)} placeholder="your@email.com" type="email" />
             </div>
-            <InputField label="Facebook Profile" field="facebookLink" placeholder="https://facebook.com/you" />
-            <SelectField label="Year / Semester" field="yearSemester" options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Alumni"]} />
+            <FormInput label="Facebook Profile" value={form.facebookLink} onChange={(v) => update("facebookLink", v)} placeholder="https://facebook.com/you" />
+            <FormSelect label="Year / Semester" value={form.yearSemester} onChange={(v) => update("yearSemester", v)} options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Alumni"]} />
 
             <h4 className="font-headline text-lg font-bold italic text-foreground pt-2">Medical</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Last Donation" field="lastDonationDate" placeholder="e.g. March 2024 or Never" />
-              <InputField label="Weight (kg)" field="weight" placeholder="e.g. 65" type="number" />
+              <FormInput label="Last Donation" value={form.lastDonationDate} onChange={(v) => update("lastDonationDate", v)} placeholder="e.g. March 2024 or Never" />
+              <FormInput label="Weight (kg)" value={form.weight} onChange={(v) => update("weight", v)} placeholder="e.g. 65" type="number" />
             </div>
-            <SelectField label="Donor Status" field="donorStatus" options={["First-time Donor", "Regular Donor", "Occasional Donor"]} />
-            <InputField label="Health Issues" field="healthIssues" placeholder="Any conditions or 'None'" />
-            <SelectField label="Preferred Time" field="preferredTime" options={["Morning", "Afternoon", "Evening", "Anytime"]} />
+            <FormSelect label="Donor Status" value={form.donorStatus} onChange={(v) => update("donorStatus", v)} options={["First-time Donor", "Regular Donor", "Occasional Donor"]} />
+            <FormInput label="Health Issues" value={form.healthIssues} onChange={(v) => update("healthIssues", v)} placeholder="Any conditions or 'None'" />
+            <FormSelect label="Preferred Time" value={form.preferredTime} onChange={(v) => update("preferredTime", v)} options={["Morning", "Afternoon", "Evening", "Anytime"]} />
 
             <h4 className="font-headline text-lg font-bold italic text-foreground pt-2">Location</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Current Area" field="currentArea" placeholder="e.g. College Road" />
-              <InputField label="Hall / Hostel" field="hallHostel" placeholder="e.g. Fazlul Haq Hall" />
+              <FormInput label="Current Area" value={form.currentArea} onChange={(v) => update("currentArea", v)} placeholder="e.g. College Road" />
+              <FormInput label="Hall / Hostel" value={form.hallHostel} onChange={(v) => update("hallHostel", v)} placeholder="e.g. Fazlul Haq Hall" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="City" field="city" placeholder="e.g. Barisal" />
-              <SelectField label="Emergency Reach" field="emergencyZone" options={["Within Campus", "Within City", "Nearby Districts", "Anywhere"]} />
+              <FormInput label="City" value={form.city} onChange={(v) => update("city", v)} placeholder="e.g. Barisal" />
+              <FormSelect label="Emergency Reach" value={form.emergencyZone} onChange={(v) => update("emergencyZone", v)} options={["Within Campus", "Within City", "Nearby Districts", "Anywhere"]} />
             </div>
 
             <h4 className="font-headline text-lg font-bold italic text-foreground pt-2">Verification</h4>
@@ -319,13 +284,14 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
         </div>
       </div>
 
-      {/* Mobile sticky submit */}
+      {/* Mobile sticky submit - tabIndex -1 prevents focus stealing */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-background/95 backdrop-blur-xl border-t border-border/30 px-4 py-3 z-40">
         <CrimsonButton
           variant="primary"
           className="w-full"
           onClick={handleSubmit}
           disabled={submitting}
+          tabIndex={-1}
         >
           {submitting ? "Joining..." : "✓ Join as Donor"}
         </CrimsonButton>
