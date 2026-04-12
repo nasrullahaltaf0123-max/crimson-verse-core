@@ -33,8 +33,8 @@ const Footer = () => {
             <Link to="/join" className="font-body text-sm text-muted-foreground hover:text-primary transition-colors">
               {t("footer.joinCommunity")}
             </Link>
-            <Link to="/dashboard" className="font-body text-sm text-muted-foreground hover:text-primary transition-colors">
-              {t("footer.dashboard")}
+            <Link to="/profile" className="font-body text-sm text-muted-foreground hover:text-primary transition-colors">
+              {t("nav.profile")}
             </Link>
           </div>
 

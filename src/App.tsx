@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,7 +33,10 @@ const App = () => (
               <Route path="/urgent" element={<UrgentPage />} />
               <Route path="/join" element={<JoinPage />} />
               <Route path="/profile" element={<DonorProfilePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
+              {/* Stealth admin — hidden route */}
+              <Route path="/nasrullah-admin-bmc-2026" element={<DashboardPage />} />
+              {/* Public /dashboard redirects to home */}
+              <Route path="/dashboard" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

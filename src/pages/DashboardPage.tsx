@@ -52,6 +52,15 @@ const DashboardPage = () => {
   const [donations, setDonations] = useState<DonationRow[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // noindex for admin page
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { document.head.removeChild(meta); };
+  }, []);
+
   useEffect(() => {
     const load = async () => {
       const [d, r, dn] = await Promise.all([
@@ -179,7 +188,7 @@ const DashboardPage = () => {
         {/* Header */}
         <section className="mb-8">
           <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight italic mb-2">
-            Dashboard
+            Admin Console
           </h1>
           <p className="font-headline italic text-muted-foreground">
             Live insights from the Crimson Verse community.
