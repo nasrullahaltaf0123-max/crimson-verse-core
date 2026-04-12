@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        headline: ["Newsreader", "serif"],
-        body: ["Manrope", "sans-serif"],
+        headline: ["Newsreader", "Hind Siliguri", "serif"],
+        body: ["Manrope", "Hind Siliguri", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
