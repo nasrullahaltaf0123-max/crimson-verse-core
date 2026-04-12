@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import devPhoto from "@/assets/md-nasrullah-profile.jpg";
 const Footer = () => {
   return (
     <footer className="bg-surface-low py-12 px-6 lg:px-8">
@@ -45,9 +45,11 @@ const Footer = () => {
       {/* Developer signature */}
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-border/30">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-center text-center sm:text-left">
-          <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-headline text-xl font-bold flex-shrink-0">
-            MN
-          </div>
+          <img
+            src={devPhoto}
+            alt="MD Nasrullah"
+            className="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-ambient"
+          />
           <div className="max-w-md">
             <p className="font-body text-[10px] uppercase tracking-[0.25em] text-primary font-bold mb-1">
               Crafted With Purpose
