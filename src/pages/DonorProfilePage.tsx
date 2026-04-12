@@ -255,11 +255,13 @@ const DonorProfilePage = () => {
               </div>
 
               {donations.length === 0 ? (
-                <div className="text-center py-8 bg-accent/30 rounded-2xl">
-                  <p className="font-body text-sm text-muted-foreground">No donations recorded yet.</p>
+                <div className="text-center py-10 bg-accent/30 rounded-2xl">
+                  <span className="text-3xl block mb-3">📖</span>
+                  <p className="font-body text-sm text-muted-foreground">No donation stories written yet.</p>
                   <p className="font-body text-xs text-muted-foreground mt-1">
                     Your donation history will appear here after you help someone.
                   </p>
+                  <p className="font-headline italic text-primary/60 text-xs mt-3">"Your story can become someone's survival."</p>
                 </div>
               ) : (
                 <div className="space-y-3">
