@@ -270,8 +270,12 @@ const SearchPage = () => {
           </div>
         ) : (
           <div className="text-center py-20">
+            <div className="w-20 h-20 bg-accent/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-3xl">🩸</span>
+            </div>
             <p className="font-headline text-2xl italic text-muted-foreground mb-2">{t("search.noResults")}</p>
-            <p className="font-body text-sm text-muted-foreground">{t("search.adjustFilters")}</p>
+            <p className="font-body text-sm text-muted-foreground mb-1">{t("search.adjustFilters")}</p>
+            <p className="font-headline italic text-primary/60 text-sm mt-4">"{t("search.zeroQuote")}"</p>
           </div>
         )}
       </main>
