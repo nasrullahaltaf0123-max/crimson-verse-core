@@ -4,6 +4,7 @@ import { BloodGroupPill, bloodGroups } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, AlertTriangle, ShieldAlert } from "lucide-react";
 import { runSpamChecks, markRequestPosted } from "@/lib/spamDetection";
+import { toast } from "sonner";
 import { FormInput, FormSelect, FormTextarea } from "@/components/FormFields";
 
 interface Props {
@@ -81,29 +82,42 @@ const EmergencyRequestForm = ({ onSuccess, onCancel }: Props) => {
       return;
     }
 
-    const { error } = await supabase.from("emergency_requests").insert({
-      patient_name: form.patient_name.trim(),
-      blood_group: form.blood_group,
-      units_needed: parseInt(form.units_needed) || 1,
-      hospital: form.hospital.trim(),
-      contact_number: form.contact_number.trim(),
-      deadline: form.deadline || null,
-      urgency_level: form.urgency_level as any,
-      current_area: form.current_area.trim() || null,
-      notes: form.notes.trim() || null,
-      doctor_note: form.doctor_note.trim() || null,
-      ward_cabin: form.ward_cabin.trim() || null,
-      replacement_needed: form.replacement_needed,
-      donor_preference: form.donor_preference.trim() || null,
-      gender_preference: form.gender_preference || null,
-      additional_instructions: form.additional_instructions.trim() || null,
-    });
+    try {
+      const { error } = await supabase.from("emergency_requests").insert({
+        patient_name: form.patient_name.trim(),
+        blood_group: form.blood_group,
+        units_needed: parseInt(form.units_needed) || 1,
+        hospital: form.hospital.trim(),
+        contact_number: form.contact_number.trim(),
+        deadline: form.deadline || null,
+        urgency_level: form.urgency_level as any,
+        current_area: form.current_area.trim() || null,
+        notes: form.notes.trim() || null,
+        doctor_note: form.doctor_note.trim() || null,
+        ward_cabin: form.ward_cabin.trim() || null,
+        replacement_needed: form.replacement_needed,
+        donor_preference: form.donor_preference.trim() || null,
+        gender_preference: form.gender_preference || null,
+        additional_instructions: form.additional_instructions.trim() || null,
+      });
 
-    setSubmitting(false);
-    submittingRef.current = false;
-    if (!error) {
+      console.log("[CrimsonVerse] Emergency insert:", { error });
+
+      if (error) {
+        console.error("[CrimsonVerse] Emergency insert error:", error.message);
+        toast.error("Failed to post request. Please try again.", { description: error.message });
+        return;
+      }
+
       markRequestPosted();
+      toast.success("Emergency request posted! 🚨");
       onSuccess(form.patient_name, form.blood_group, form.current_area || undefined);
+    } catch (err: any) {
+      console.error("[CrimsonVerse] Emergency insert exception:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 

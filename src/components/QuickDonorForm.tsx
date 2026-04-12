@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { ChevronDown, Shield, Users, Check, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { useSiteStats } from "@/hooks/useSiteStats";
 import { FormInput, FormSelect } from "@/components/FormFields";
 
@@ -92,34 +93,47 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
     setSubmitting(true);
     submittingRef.current = true;
 
-    const { data, error } = await supabase.from("donors").insert({
-      full_name: form.fullName.trim(),
-      phone: form.phone.trim(),
-      blood_group: form.bloodGroup,
-      batch_session: form.batch,
-      gender: form.gender,
-      available_now: form.currentlyAvailable,
-      student_roll: form.studentId.trim() || null,
-      email: form.email.trim() || null,
-      facebook_link: form.facebookLink.trim() || null,
-      year_semester: form.yearSemester || null,
-      last_donation_date: form.lastDonationDate.trim() || null,
-      donor_status: form.donorStatus || null,
-      weight: form.weight || null,
-      health_notes: form.healthIssues.trim() || null,
-      preferred_time: form.preferredTime || null,
-      current_area: form.currentArea.trim() || null,
-      hall_hostel: form.hallHostel.trim() || null,
-      city: form.city.trim() || null,
-      emergency_zone: form.emergencyZone || null,
-      consent: form.consentChecked,
-    }).select("access_token").single();
+    try {
+      const { data, error } = await supabase.from("donors").insert({
+        full_name: form.fullName.trim(),
+        phone: form.phone.trim(),
+        blood_group: form.bloodGroup,
+        batch_session: form.batch,
+        gender: form.gender,
+        available_now: form.currentlyAvailable,
+        student_roll: form.studentId.trim() || null,
+        email: form.email.trim() || null,
+        facebook_link: form.facebookLink.trim() || null,
+        year_semester: form.yearSemester || null,
+        last_donation_date: form.lastDonationDate.trim() || null,
+        donor_status: form.donorStatus || null,
+        weight: form.weight || null,
+        health_notes: form.healthIssues.trim() || null,
+        preferred_time: form.preferredTime || null,
+        current_area: form.currentArea.trim() || null,
+        hall_hostel: form.hallHostel.trim() || null,
+        city: form.city.trim() || null,
+        emergency_zone: form.emergencyZone || null,
+        consent: form.consentChecked,
+      }).select("access_token").single();
 
-    setSubmitting(false);
-    submittingRef.current = false;
-    if (!error && data) {
+      console.log("[CrimsonVerse] Donor insert:", { data, error });
+
+      if (error) {
+        console.error("[CrimsonVerse] Donor insert error:", error.message);
+        toast.error("Failed to save. Please try again.", { description: error.message });
+        return;
+      }
+
       localStorage.removeItem(DRAFT_KEY);
+      toast.success("Welcome to the circle! 🩸");
       onSuccess({ ...form, accessToken: (data as any).access_token });
+    } catch (err: any) {
+      console.error("[CrimsonVerse] Donor insert exception:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 
