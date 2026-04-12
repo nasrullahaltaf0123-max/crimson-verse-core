@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&family=Noto+Serif+Bengali:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -106,6 +106,15 @@
   }
   ::selection {
     @apply bg-accent text-accent-foreground;
+  }
+
+  /* Bangla font overrides */
+  .lang-bn body {
+    font-family: "Noto Sans Bengali", sans-serif;
+  }
+  .lang-bn h1, .lang-bn h2, .lang-bn h3, .lang-bn h4, .lang-bn h5, .lang-bn h6 {
+    font-family: "Noto Serif Bengali", serif;
+    font-style: normal;
   }
 }
 

@@ -7,11 +7,13 @@ import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/Blood
 import DonorCard, { type Donor } from "@/components/DonorCard";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { rankDonors, getDonorBadges, type RankBadge } from "@/lib/donorRanking";
+import { useI18n } from "@/contexts/I18nContext";
 
 const batches = ["All Batches", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"];
 const genders = ["Any", "Male", "Female"] as const;
 
 const SearchPage = () => {
+  const { t } = useI18n();
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<BloodGroup | null>(null);
@@ -92,7 +94,7 @@ const SearchPage = () => {
       {/* Batch */}
       <div>
         <span className="text-muted-foreground font-body font-bold text-xs tracking-widest uppercase block mb-3">
-          Departmental Batch
+          {t("search.batch")}
         </span>
         <select
           value={selectedBatch}
@@ -108,7 +110,7 @@ const SearchPage = () => {
       {/* Gender */}
       <div className="mt-6">
         <span className="text-muted-foreground font-body font-bold text-xs tracking-widest uppercase block mb-3">
-          Gender
+          {t("search.gender")}
         </span>
         <div className="flex gap-2">
           {genders.map((g) => (
@@ -131,9 +133,9 @@ const SearchPage = () => {
       <div className="mt-6 flex items-center justify-between">
         <div>
           <span className="text-muted-foreground font-body font-bold text-xs tracking-widest uppercase block">
-            Available Only
+          {t("search.availableOnly")}
           </span>
-          <span className="text-xs text-muted-foreground font-body">Show immediate donors</span>
+          <span className="text-xs text-muted-foreground font-body">{t("search.showImmediate")}</span>
         </div>
         <button
           onClick={() => setAvailableOnly(!availableOnly)}
@@ -160,17 +162,17 @@ const SearchPage = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="max-w-2xl">
               <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold text-primary tracking-tight leading-none mb-4 italic">
-                The Life Search
+                {t("search.title")}
               </h1>
               <p className="text-lg lg:text-xl text-muted-foreground font-headline italic">
-                Every drop is a story waiting to continue. Filter through our community of student donors to find your literal lifeline.
+                {t("search.subtitle")}
               </p>
             </div>
             <div className="bg-primary text-primary-foreground px-5 py-4 rounded-xl flex items-center gap-3 shadow-elevated self-start">
               <Activity className="h-5 w-5" />
               <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-widest font-bold font-body opacity-80">Live Status</span>
-                <span className="font-bold font-body">{activeDonorCount} Active Donors</span>
+                <span className="text-[10px] uppercase tracking-widest font-bold font-body opacity-80">{t("search.liveStatus")}</span>
+                <span className="font-bold font-body">{activeDonorCount} {t("search.activeDonors")}</span>
               </div>
             </div>
           </div>
@@ -181,7 +183,7 @@ const SearchPage = () => {
           {/* Blood group selector */}
           <div className="lg:col-span-8 bg-surface-low p-6 lg:p-8 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-primary font-body font-bold text-sm tracking-widest uppercase">Select Blood Group</span>
+              <span className="text-primary font-body font-bold text-sm tracking-widest uppercase">{t("search.selectBlood")}</span>
               <div className="h-px flex-grow bg-border/50" />
               {selectedBloodGroup && (
                 <button
@@ -231,10 +233,10 @@ const SearchPage = () => {
 
         {/* Results header */}
         <div className="flex items-center gap-4 mb-8">
-          <h2 className="font-headline text-2xl font-bold italic text-foreground whitespace-nowrap">Available Donors</h2>
+          <h2 className="font-headline text-2xl font-bold italic text-foreground whitespace-nowrap">{t("search.available")}</h2>
           <div className="h-[1px] flex-grow bg-border/50" />
           <span className="font-body text-xs font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-            {loading ? "Loading..." : `Showing ${filtered.length} ${filtered.length === 1 ? "Match" : "Matches"}`}
+            {loading ? t("common.loading") : `${t("common.showing")} ${filtered.length} ${filtered.length === 1 ? t("common.match") : t("common.matches")}`}
           </span>
         </div>
 
@@ -268,8 +270,8 @@ const SearchPage = () => {
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="font-headline text-2xl italic text-muted-foreground mb-2">No donors found</p>
-            <p className="font-body text-sm text-muted-foreground">Try adjusting your filters.</p>
+            <p className="font-headline text-2xl italic text-muted-foreground mb-2">{t("search.noResults")}</p>
+            <p className="font-body text-sm text-muted-foreground">{t("search.adjustFilters")}</p>
           </div>
         )}
       </main>
@@ -280,7 +282,7 @@ const SearchPage = () => {
           <div className="absolute inset-0 bg-foreground/30 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
           <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-3xl p-6 pb-10 shadow-elevated animate-fade-up max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-headline text-xl font-bold italic text-foreground">Filters</h3>
+              <h3 className="font-headline text-xl font-bold italic text-foreground">{t("search.filters")}</h3>
               <button onClick={() => setDrawerOpen(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-6 w-6" />
               </button>
@@ -291,7 +293,7 @@ const SearchPage = () => {
               className="w-full mt-8"
               onClick={() => setDrawerOpen(false)}
             >
-              Show {filtered.length} Results
+              {t("search.showResults")} ({filtered.length})
             </CrimsonButton>
           </div>
         </div>

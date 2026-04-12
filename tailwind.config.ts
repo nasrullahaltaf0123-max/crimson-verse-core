@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        headline: ["Newsreader", "Hind Siliguri", "serif"],
-        body: ["Manrope", "Hind Siliguri", "sans-serif"],
+        headline: ["Newsreader", "Noto Serif Bengali", "serif"],
+        body: ["Manrope", "Noto Sans Bengali", "sans-serif"],
+        "bn-headline": ["Noto Serif Bengali", "serif"],
+        "bn-body": ["Noto Sans Bengali", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
