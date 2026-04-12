@@ -251,9 +251,18 @@ const SearchPage = () => {
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((donor, i) => (
-              <div key={donor.id} className="animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-                <DonorCard donor={donor} />
+            {filtered.map((item, i) => (
+              <div key={item.donor.id} className="animate-fade-up relative" style={{ animationDelay: `${i * 80}ms` }}>
+                {item.badges.length > 0 && (
+                  <div className="flex gap-1.5 mb-2">
+                    {item.badges.map((b) => (
+                      <span key={b} className="text-[9px] font-body font-bold uppercase tracking-widest bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <DonorCard donor={item.donor} />
               </div>
             ))}
           </div>
