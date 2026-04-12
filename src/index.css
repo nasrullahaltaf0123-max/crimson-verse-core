@@ -56,8 +56,10 @@
     --sidebar-ring: 358 95% 20%;
 
     --gradient-primary: linear-gradient(135deg, hsl(358 95% 20%), hsl(358 92% 28%));
-    --shadow-ambient: 0 8px 32px -8px hsl(358 95% 20% / 0.08);
-    --shadow-elevated: 0 16px 48px -12px hsl(358 95% 20% / 0.12);
+    --gradient-subtle: linear-gradient(135deg, hsl(358 95% 20% / 0.04), hsl(358 92% 28% / 0.08));
+    --shadow-ambient: 0 4px 24px -4px hsl(358 95% 20% / 0.06), 0 1px 3px hsl(0 0% 0% / 0.04);
+    --shadow-elevated: 0 12px 40px -8px hsl(358 95% 20% / 0.1), 0 4px 12px hsl(0 0% 0% / 0.04);
+    --shadow-premium: 0 20px 60px -12px hsl(358 95% 20% / 0.12), 0 8px 20px hsl(0 0% 0% / 0.03);
   }
 
   .dark {
@@ -91,6 +93,10 @@
     --sidebar-accent-foreground: 0 60% 70%;
     --sidebar-border: 0 10% 18%;
     --sidebar-ring: 0 60% 70%;
+    --gradient-subtle: linear-gradient(135deg, hsl(0 60% 70% / 0.04), hsl(0 60% 70% / 0.08));
+    --shadow-ambient: 0 4px 24px -4px hsl(0 0% 0% / 0.3), 0 1px 3px hsl(0 0% 0% / 0.2);
+    --shadow-elevated: 0 12px 40px -8px hsl(0 0% 0% / 0.4), 0 4px 12px hsl(0 0% 0% / 0.2);
+    --shadow-premium: 0 20px 60px -12px hsl(0 0% 0% / 0.5), 0 8px 20px hsl(0 0% 0% / 0.2);
   }
 }
 
@@ -100,9 +106,13 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
+    text-wrap: balance;
   }
   ::selection {
     @apply bg-accent text-accent-foreground;
@@ -130,5 +140,41 @@
   }
   .shadow-elevated {
     box-shadow: var(--shadow-elevated);
+  }
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  /* Premium section transitions */
+  .section-fade {
+    animation: sectionFadeIn 0.8s ease-out both;
+  }
+
+  /* Premium glass effect */
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-2xl border border-border/20;
+  }
+
+  /* Smooth hover lift */
+  .hover-lift {
+    @apply transition-all duration-500 ease-out;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-premium);
+  }
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
