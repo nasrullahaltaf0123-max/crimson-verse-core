@@ -3,11 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { CrimsonButton } from "./CrimsonButton";
 import { Menu, X, UserPlus } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import LangToggle from "./LangToggle";
+import { useI18n } from "@/contexts/I18nContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isJoinPage = location.pathname === "/join";
+  const { t } = useI18n();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/30">
@@ -17,22 +20,25 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-5">
           <Link to="/search" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Search Donors
+            {t("nav.search")}
           </Link>
           <Link to="/urgent" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Urgent
+            {t("nav.urgent")}
           </Link>
           <Link to="/profile" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            My Profile
+            {t("nav.profile")}
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LangToggle />
+            <ThemeToggle />
+          </div>
           {!isJoinPage && (
             <Link to="/join">
               <CrimsonButton size="sm" variant="primary">
                 <UserPlus className="mr-1.5 h-3.5 w-3.5" />
-                Join as Donor
+                {t("nav.join")}
               </CrimsonButton>
             </Link>
           )}
@@ -53,22 +59,23 @@ const Navbar = () => {
         <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border/30 animate-fade-in">
           <nav className="flex flex-col px-6 py-6 gap-4">
             <Link to="/search" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
-              Search Donors
+              {t("nav.search")}
             </Link>
             <Link to="/urgent" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
-              Urgent Requests
+              {t("nav.urgent")}
             </Link>
             <Link to="/profile" onClick={() => setOpen(false)} className="font-body text-base font-medium text-foreground py-2">
-              My Profile
+              {t("nav.profile")}
             </Link>
             <div className="flex items-center gap-3 py-2">
+              <LangToggle />
               <ThemeToggle />
-              <span className="font-body text-sm text-muted-foreground">Toggle theme</span>
+              <span className="font-body text-sm text-muted-foreground">{t("nav.theme")}</span>
             </div>
             <Link to="/join" onClick={() => setOpen(false)}>
               <CrimsonButton variant="primary" className="w-full mt-2">
                 <UserPlus className="mr-2 h-4 w-4" />
-                Join as Donor
+                {t("nav.join")}
               </CrimsonButton>
             </Link>
           </nav>
