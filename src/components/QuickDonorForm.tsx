@@ -193,7 +193,7 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
         <FormInput label="Your Name" value={form.fullName} onChange={(v) => update("fullName", v)} placeholder="Full name" required error={errors.fullName} />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormInput label="Phone" value={form.phone} onChange={(v) => update("phone", v)} placeholder="+880 1XXX..." type="tel" required error={errors.phone} />
+          <FormInput label="Phone" value={form.phone} onChange={(v) => update("phone", v)} placeholder="01XXXXXXXXX" type="tel" inputMode="numeric" autoComplete="tel" autoCorrect="off" maxLength={11} required error={errors.phone} />
           <FormSelect label="Gender" value={form.gender} onChange={(v) => update("gender", v)} options={["Male", "Female", "Other"]} required error={errors.gender} />
         </div>
 
