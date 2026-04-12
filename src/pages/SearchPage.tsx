@@ -183,7 +183,7 @@ const SearchPage = () => {
           {/* Blood group selector */}
           <div className="lg:col-span-8 bg-surface-low p-6 lg:p-8 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-primary font-body font-bold text-sm tracking-widest uppercase">Select Blood Group</span>
+              <span className="text-primary font-body font-bold text-sm tracking-widest uppercase">{t("search.selectBlood")}</span>
               <div className="h-px flex-grow bg-border/50" />
               {selectedBloodGroup && (
                 <button
