@@ -187,7 +187,6 @@ const DashboardPage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
         {/* Header */}
         <section className="mb-8">
-          <meta name="robots" content="noindex, nofollow" />
           <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight italic mb-2">
             Admin Console
           </h1>
