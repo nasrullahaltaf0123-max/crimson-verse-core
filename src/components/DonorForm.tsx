@@ -2,9 +2,9 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { BloodGroupPill, bloodGroups, type BloodGroup } from "@/components/BloodGroupPill";
 import { CrimsonButton } from "@/components/CrimsonButton";
 import { Upload, Check } from "lucide-react";
+import { FormInput, FormSelect } from "@/components/FormFields";
 
 export interface DonorFormData {
-  // Personal
   fullName: string;
   studentId: string;
   batch: string;
@@ -13,7 +13,6 @@ export interface DonorFormData {
   phone: string;
   email: string;
   facebookLink: string;
-  // Medical
   bloodGroup: BloodGroup | "";
   lastDonationDate: string;
   donorStatus: string;
@@ -21,12 +20,10 @@ export interface DonorFormData {
   healthIssues: string;
   currentlyAvailable: boolean;
   preferredTime: string;
-  // Location
   currentArea: string;
   hallHostel: string;
   city: string;
   emergencyZone: string;
-  // Verification
   bloodReport: File | null;
   studentIdCard: File | null;
   consentChecked: boolean;
@@ -65,15 +62,13 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
   const [activeSection, setActiveSection] = useState<Section>("Personal");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
-  const fileInputBlood = useRef<HTMLInputElement>(null);
-  const fileInputId = useRef<HTMLInputElement>(null);
 
-  // Autosave draft
+  // Debounced autosave
   useEffect(() => {
     const timeout = setTimeout(() => {
       const { bloodReport, studentIdCard, ...saveable } = form;
       localStorage.setItem(DRAFT_KEY, JSON.stringify(saveable));
-    }, 800);
+    }, 1200);
     return () => clearTimeout(timeout);
   }, [form]);
 
@@ -103,7 +98,6 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
       localStorage.removeItem(DRAFT_KEY);
       onSuccess();
     } else {
-      // Jump to first section with error
       const errorKeys = Object.keys(errors);
       if (errorKeys.some(k => ["fullName","studentId","batch","yearSemester","gender","phone","email","facebookLink"].includes(k))) setActiveSection("Personal");
       else if (errorKeys.some(k => ["bloodGroup","weight"].includes(k))) setActiveSection("Medical");
@@ -118,47 +112,6 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
 
   const sectionIndex = sections.indexOf(activeSection);
   const progress = ((sectionIndex + 1) / sections.length) * 100;
-
-  const InputField = ({ label, field, placeholder, type = "text", required = false }: { label: string; field: keyof DonorFormData; placeholder: string; type?: string; required?: boolean }) => (
-    <div>
-      <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-        {label} {required && <span className="text-primary">*</span>}
-      </label>
-      <input
-        type={type}
-        value={form[field] as string}
-        onChange={(e) => update(field, e.target.value)}
-        placeholder={placeholder}
-        className={`w-full bg-card rounded-lg px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient transition-shadow focus:shadow-elevated ${
-          errors[field] && touched.has(field) ? "ring-2 ring-destructive" : ""
-        }`}
-      />
-      {errors[field] && touched.has(field) && (
-        <p className="text-destructive text-xs font-body mt-1">{errors[field]}</p>
-      )}
-    </div>
-  );
-
-  const SelectField = ({ label, field, options, required = false }: { label: string; field: keyof DonorFormData; options: string[]; required?: boolean }) => (
-    <div>
-      <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-        {label} {required && <span className="text-primary">*</span>}
-      </label>
-      <select
-        value={form[field] as string}
-        onChange={(e) => update(field, e.target.value)}
-        className={`w-full bg-card rounded-lg px-4 py-3 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-ambient ${
-          errors[field] && touched.has(field) ? "ring-2 ring-destructive" : ""
-        }`}
-      >
-        <option value="">Select...</option>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
-      {errors[field] && touched.has(field) && (
-        <p className="text-destructive text-xs font-body mt-1">{errors[field]}</p>
-      )}
-    </div>
-  );
 
   const FileUpload = ({ label, file, onFile }: { label: string; file: File | null; onFile: (f: File | null) => void }) => (
     <div>
@@ -217,6 +170,7 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
           {sections.map((s, i) => (
             <button
               key={s}
+              type="button"
               onClick={() => setActiveSection(s)}
               className={`font-body text-xs font-bold uppercase tracking-widest transition-colors ${
                 s === activeSection ? "text-primary" : i <= sectionIndex ? "text-foreground" : "text-muted-foreground/50"
@@ -239,19 +193,19 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
         <div className="space-y-5 animate-fade-in">
           <h3 className="font-headline text-2xl font-bold italic text-foreground mb-2">Personal Details</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="Full Name" field="fullName" placeholder="Your full name" required />
-            <InputField label="Student ID / Roll" field="studentId" placeholder="e.g. ENG-2024-042" required />
+            <FormInput label="Full Name" value={form.fullName} onChange={(v) => update("fullName", v)} placeholder="Your full name" required error={touched.has("fullName") ? errors.fullName : undefined} />
+            <FormInput label="Student ID / Roll" value={form.studentId} onChange={(v) => update("studentId", v)} placeholder="e.g. ENG-2024-042" required error={touched.has("studentId") ? errors.studentId : undefined} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <SelectField label="Batch / Session" field="batch" options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"]} required />
-            <SelectField label="Year / Semester" field="yearSemester" options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Alumni"]} />
+            <FormSelect label="Batch / Session" value={form.batch} onChange={(v) => update("batch", v)} options={["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "Alumni"]} required error={touched.has("batch") ? errors.batch : undefined} />
+            <FormSelect label="Year / Semester" value={form.yearSemester} onChange={(v) => update("yearSemester", v)} options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Alumni"]} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <SelectField label="Gender" field="gender" options={["Male", "Female", "Other"]} required />
-            <InputField label="Phone" field="phone" placeholder="+880 1XXX-XXXXXX" type="tel" required />
+            <FormSelect label="Gender" value={form.gender} onChange={(v) => update("gender", v)} options={["Male", "Female", "Other"]} required error={touched.has("gender") ? errors.gender : undefined} />
+            <FormInput label="Phone" value={form.phone} onChange={(v) => update("phone", v)} placeholder="+880 1XXX-XXXXXX" type="tel" required error={touched.has("phone") ? errors.phone : undefined} />
           </div>
-          <InputField label="Email" field="email" placeholder="your@email.com" type="email" />
-          <InputField label="Facebook Profile Link" field="facebookLink" placeholder="https://facebook.com/yourprofile" />
+          <FormInput label="Email" value={form.email} onChange={(v) => update("email", v)} placeholder="your@email.com" type="email" error={touched.has("email") ? errors.email : undefined} />
+          <FormInput label="Facebook Profile Link" value={form.facebookLink} onChange={(v) => update("facebookLink", v)} placeholder="https://facebook.com/yourprofile" />
         </div>
       )}
 
@@ -259,7 +213,6 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
       {activeSection === "Medical" && (
         <div className="space-y-5 animate-fade-in">
           <h3 className="font-headline text-2xl font-bold italic text-foreground mb-2">Medical Information</h3>
-
           <div>
             <label className="block font-body text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
               Blood Group <span className="text-primary">*</span>
@@ -277,23 +230,22 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
             </div>
             {errors.bloodGroup && <p className="text-destructive text-xs font-body mt-2">{errors.bloodGroup}</p>}
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="Last Donation Date" field="lastDonationDate" placeholder="e.g. March 2024 or Never" />
-            <SelectField label="Donor Status" field="donorStatus" options={["First-time Donor", "Regular Donor", "Occasional Donor"]} />
+            <FormInput label="Last Donation Date" value={form.lastDonationDate} onChange={(v) => update("lastDonationDate", v)} placeholder="e.g. March 2024 or Never" />
+            <FormSelect label="Donor Status" value={form.donorStatus} onChange={(v) => update("donorStatus", v)} options={["First-time Donor", "Regular Donor", "Occasional Donor"]} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="Weight (kg)" field="weight" placeholder="e.g. 65" type="number" />
-            <SelectField label="Preferred Donation Time" field="preferredTime" options={["Morning", "Afternoon", "Evening", "Anytime"]} />
+            <FormInput label="Weight (kg)" value={form.weight} onChange={(v) => update("weight", v)} placeholder="e.g. 65" type="number" error={touched.has("weight") ? errors.weight : undefined} />
+            <FormSelect label="Preferred Donation Time" value={form.preferredTime} onChange={(v) => update("preferredTime", v)} options={["Morning", "Afternoon", "Evening", "Anytime"]} />
           </div>
-          <InputField label="Known Health Issues" field="healthIssues" placeholder="List any conditions or write 'None'" />
-
+          <FormInput label="Known Health Issues" value={form.healthIssues} onChange={(v) => update("healthIssues", v)} placeholder="List any conditions or write 'None'" />
           <div className="flex items-center justify-between bg-card rounded-lg px-4 py-4 shadow-ambient">
             <div>
               <span className="font-body text-sm font-bold text-foreground block">Currently Available</span>
               <span className="font-body text-xs text-muted-foreground">Toggle on if ready to donate now</span>
             </div>
             <button
+              type="button"
               onClick={() => update("currentlyAvailable", !form.currentlyAvailable)}
               className={`relative w-12 h-7 rounded-full transition-colors ${form.currentlyAvailable ? "bg-primary" : "bg-muted"}`}
             >
@@ -308,12 +260,12 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
         <div className="space-y-5 animate-fade-in">
           <h3 className="font-headline text-2xl font-bold italic text-foreground mb-2">Location & Reach</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="Current Area" field="currentArea" placeholder="e.g. College Road, Barisal" />
-            <InputField label="Hall / Hostel" field="hallHostel" placeholder="e.g. Fazlul Haq Hall" />
+            <FormInput label="Current Area" value={form.currentArea} onChange={(v) => update("currentArea", v)} placeholder="e.g. College Road, Barisal" />
+            <FormInput label="Hall / Hostel" value={form.hallHostel} onChange={(v) => update("hallHostel", v)} placeholder="e.g. Fazlul Haq Hall" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="City" field="city" placeholder="e.g. Barisal" />
-            <SelectField label="Emergency Reach Zone" field="emergencyZone" options={["Within Campus", "Within City", "Nearby Districts", "Anywhere"]} />
+            <FormInput label="City" value={form.city} onChange={(v) => update("city", v)} placeholder="e.g. Barisal" />
+            <FormSelect label="Emergency Reach Zone" value={form.emergencyZone} onChange={(v) => update("emergencyZone", v)} options={["Within Campus", "Within City", "Nearby Districts", "Anywhere"]} />
           </div>
         </div>
       )}
@@ -322,28 +274,14 @@ const DonorForm = ({ onSuccess }: DonorFormProps) => {
       {activeSection === "Verification" && (
         <div className="space-y-5 animate-fade-in">
           <h3 className="font-headline text-2xl font-bold italic text-foreground mb-2">Verification & Consent</h3>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <FileUpload label="Blood Report" file={form.bloodReport} onFile={(f) => update("bloodReport", f)} />
             <FileUpload label="Student ID Card" file={form.studentIdCard} onFile={(f) => update("studentIdCard", f)} />
           </div>
-
           <div className="space-y-4 mt-4">
-            <CheckboxField
-              label="I consent to share my medical information"
-              field="consentChecked"
-              desc="Your data will only be used for blood donation matching within the BM College community."
-            />
-            <CheckboxField
-              label="I agree to the privacy policy"
-              field="privacyChecked"
-              desc="Your information is encrypted and never sold to third parties."
-            />
-            <CheckboxField
-              label="Allow emergency contact"
-              field="emergencyContactPermission"
-              desc="Verified requesters can contact you directly during life-threatening emergencies."
-            />
+            <CheckboxField label="I consent to share my medical information" field="consentChecked" desc="Your data will only be used for blood donation matching within the BM College community." />
+            <CheckboxField label="I agree to the privacy policy" field="privacyChecked" desc="Your information is encrypted and never sold to third parties." />
+            <CheckboxField label="Allow emergency contact" field="emergencyContactPermission" desc="Verified requesters can contact you directly during life-threatening emergencies." />
           </div>
         </div>
       )}
