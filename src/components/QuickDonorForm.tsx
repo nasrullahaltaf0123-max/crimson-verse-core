@@ -94,9 +94,23 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
     submittingRef.current = true;
 
     try {
-      const { data, error } = await supabase.from("donors").insert({
+      // Check if donor already exists by phone
+      const phone = form.phone.trim();
+      const { data: existing, error: lookupError } = await supabase
+        .from("donors")
+        .select("id, access_token")
+        .eq("phone", phone)
+        .maybeSingle();
+
+      if (lookupError) {
+        console.error("[CrimsonVerse] Donor lookup error:", lookupError.message);
+        toast.error("Could not verify your phone. Please try again.");
+        return;
+      }
+
+      const donorPayload = {
         full_name: form.fullName.trim(),
-        phone: form.phone.trim(),
+        phone,
         blood_group: form.bloodGroup,
         batch_session: form.batch,
         gender: form.gender,
@@ -115,21 +129,46 @@ const QuickDonorForm = ({ onSuccess }: QuickDonorFormProps) => {
         city: form.city.trim() || null,
         emergency_zone: form.emergencyZone || null,
         consent: form.consentChecked,
-      }).select("access_token").single();
+      };
 
-      console.log("[CrimsonVerse] Donor insert:", { data, error });
+      if (existing) {
+        // UPDATE existing donor with WHERE clause
+        const { error: updateError } = await supabase
+          .from("donors")
+          .update(donorPayload)
+          .eq("id", existing.id);
 
-      if (error) {
-        console.error("[CrimsonVerse] Donor insert error:", error.message);
-        toast.error("Failed to save. Please try again.", { description: error.message });
-        return;
+        console.log("[CrimsonVerse] Donor update:", { id: existing.id, error: updateError });
+
+        if (updateError) {
+          toast.error("Failed to update your profile.", { description: updateError.message });
+          return;
+        }
+
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("Your donor profile was updated! ✓");
+        onSuccess({ ...form, accessToken: existing.access_token ?? undefined });
+      } else {
+        // INSERT new donor
+        const { data, error: insertError } = await supabase
+          .from("donors")
+          .insert(donorPayload)
+          .select("access_token")
+          .single();
+
+        console.log("[CrimsonVerse] Donor insert:", { data, error: insertError });
+
+        if (insertError) {
+          toast.error("Failed to save. Please try again.", { description: insertError.message });
+          return;
+        }
+
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("Welcome to the circle! 🩸");
+        onSuccess({ ...form, accessToken: (data as any)?.access_token });
       }
-
-      localStorage.removeItem(DRAFT_KEY);
-      toast.success("Welcome to the circle! 🩸");
-      onSuccess({ ...form, accessToken: (data as any).access_token });
     } catch (err: any) {
-      console.error("[CrimsonVerse] Donor insert exception:", err);
+      console.error("[CrimsonVerse] Donor save exception:", err);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
