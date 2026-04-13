@@ -100,7 +100,9 @@ const DashboardPage = () => {
       return;
     }
     toast.success(status === "approved" ? "Donor approved! ✓" : "Donor rejected.");
+    // Immediately update local state + refetch for consistency
     setDonors((prev) => prev.map((d) => d.id === donorId ? { ...d, approval_status: status } : d));
+    loadData();
   };
 
   // Only count approved donors for KPIs
