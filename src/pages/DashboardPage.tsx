@@ -244,14 +244,7 @@ const DashboardPage = () => {
             }`}
           >
             <ShieldAlert className="h-4 w-4" />
-            Pending Approval
-            {pendingDonors.length > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "pending" ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
-              }`}>
-                {pendingDonors.length}
-              </span>
-            )}
+            Pending Approval ({pendingDonors.length})
           </button>
         </div>
 
