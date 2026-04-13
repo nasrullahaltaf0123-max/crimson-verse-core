@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { waLink } from "@/lib/phoneUtils";
 import { Phone, MessageCircle, Clock } from "lucide-react";
 import type { BloodGroup } from "./BloodGroupPill";
 
@@ -90,7 +91,7 @@ const DonorCard = ({ donor, className }: DonorCardProps) => {
         {/* Action buttons */}
         <div className="mt-3.5 grid grid-cols-2 gap-2.5">
           <a
-            href={`https://wa.me/${donor.whatsapp}`}
+            href={waLink(donor.whatsapp)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-1.5 py-2.5 bg-muted hover:bg-surface-high rounded-xl text-[13px] font-bold text-foreground transition-colors duration-300 font-body active:scale-[0.97]"

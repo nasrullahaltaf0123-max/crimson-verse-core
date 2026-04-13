@@ -1,4 +1,5 @@
 import { Phone, MessageCircle, Clock, CheckCircle, AlertTriangle, MapPin } from "lucide-react";
+import { waLink } from "@/lib/phoneUtils";
 import type { EmergencyRequest } from "@/pages/UrgentPage";
 
 interface Props {
@@ -120,7 +121,7 @@ const ActiveRequestsFeed = ({ requests, loading, onMarkSolved }: Props) => {
             {/* Action buttons */}
             <div className="flex gap-3">
               <a
-                href={`https://wa.me/${req.contact_number.replace(/[^0-9]/g, "")}`}
+                href={waLink(req.contact_number)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-surface-high rounded-lg text-sm font-bold text-foreground transition-colors font-body active:scale-95"
