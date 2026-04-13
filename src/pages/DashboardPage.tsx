@@ -67,9 +67,9 @@ const DashboardPage = () => {
 
   const loadData = async () => {
     const [d, r, dn] = await Promise.all([
-      supabase.from("donors").select("id, full_name, blood_group, batch_session, phone, available_now, created_at, approval_status").order("created_at", { ascending: false }),
-      supabase.from("emergency_requests").select("id, blood_group, urgency_level, status, current_area, created_at, solved_at").order("created_at", { ascending: false }),
-      supabase.from("donations").select("id, donor_id, blood_group, donation_date, units_donated, created_at").order("donation_date", { ascending: false }),
+      supabase.from("donors").select("id, full_name, blood_group, batch_session, phone, available_now, created_at, approval_status").order("created_at", { ascending: false }).limit(5000),
+      supabase.from("emergency_requests").select("id, blood_group, urgency_level, status, current_area, created_at, solved_at").order("created_at", { ascending: false }).limit(5000),
+      supabase.from("donations").select("id, donor_id, blood_group, donation_date, units_donated, created_at").order("donation_date", { ascending: false }).limit(5000),
     ]);
     if (d.data) setDonors(d.data as unknown as DonorRow[]);
     if (r.data) setRequests(r.data as unknown as RequestRow[]);
@@ -77,7 +77,21 @@ const DashboardPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => { loadData(); }, []);
+  // Load fresh data on mount + subscribe to realtime donor changes
+  useEffect(() => {
+    loadData();
+
+    const channel = supabase
+      .channel("admin-donors-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "donors" },
+        () => { loadData(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const handleApproval = async (donorId: string, status: "approved" | "rejected") => {
     const { error } = await supabase.from("donors").update({ approval_status: status }).eq("id", donorId);
@@ -86,7 +100,9 @@ const DashboardPage = () => {
       return;
     }
     toast.success(status === "approved" ? "Donor approved! ✓" : "Donor rejected.");
+    // Immediately update local state + refetch for consistency
     setDonors((prev) => prev.map((d) => d.id === donorId ? { ...d, approval_status: status } : d));
+    loadData();
   };
 
   // Only count approved donors for KPIs
@@ -228,14 +244,7 @@ const DashboardPage = () => {
             }`}
           >
             <ShieldAlert className="h-4 w-4" />
-            Pending Approval
-            {pendingDonors.length > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "pending" ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
-              }`}>
-                {pendingDonors.length}
-              </span>
-            )}
+            Pending Approval ({pendingDonors.length})
           </button>
         </div>
 
