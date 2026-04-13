@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, MessageCircle, Copy, Check, MapPin } from "lucide-react";
+import { waLink } from "@/lib/phoneUtils";
 import { rankDonors, getDonorBadges } from "@/lib/donorRanking";
 
 interface MatchedDonor {
@@ -144,7 +145,7 @@ const DonorMatchPreview = ({ bloodGroup, area }: Props) => {
                   {copiedId === d.id ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
                 </button>
                 <a
-                  href={`https://wa.me/${d.phone.replace(/[^0-9]/g, "")}`}
+                  href={waLink(d.phone)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2.5 bg-muted rounded-lg hover:bg-surface-high transition-colors active:scale-95"
