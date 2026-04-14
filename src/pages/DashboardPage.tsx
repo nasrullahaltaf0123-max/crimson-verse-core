@@ -80,7 +80,7 @@ const timeAgo = (date: string) => {
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
-const exportCSV = (rows: Record<string, unknown>[], filename: string) => {
+const exportCSV = (rows: any[], filename: string) => {
   if (rows.length === 0) { toast.error("Nothing to export"); return; }
   const headers = Object.keys(rows[0]);
   const csv = [headers.join(","), ...rows.map(r => headers.map(h => `"${String(r[h] ?? "").replace(/"/g, '""')}"`).join(","))].join("\n");
